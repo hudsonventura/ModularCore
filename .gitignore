@@ -1,0 +1,8 @@
+cache_file
+*.phpproj
+*.user
+*.sln
+web.config
+.vs/
+modules/
+*.gitignore
