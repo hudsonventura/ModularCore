@@ -1,2 +1,2 @@
 <?php
-include '403.php'; die();
+include 'errors\403.php'; die();
