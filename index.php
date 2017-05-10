@@ -2,7 +2,6 @@
 /*Starts the meter of BENCHMARK LIB*/
 $coreStartTime = microtime(true);
 
-$teste = '';
 
 /* DEFINE O ACESSO ROOT */
 define("ROOT_ACCESS", '');
