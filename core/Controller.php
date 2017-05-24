@@ -46,9 +46,9 @@ abstract class Controller extends Core{
 	}
 	
 	public function functionNotFound(){
-		$file = BASE.'/modules/'.$this->coreModule.'/controllers/404.php';
+		$file = BASE.'/modules/'.$this->core->module.'/controllers/404.php';
 		if(!file_exists($file)){
-			$file = BASE.'/core/404.php';
+			$file = BASE.'/core/errors/404.php';
 		}
 		require $file;
 	}

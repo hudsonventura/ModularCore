@@ -6,7 +6,7 @@ if (!defined('ROOT_ACCESS')) exit('<h2>ERROR 403 - FORBIDDEN</h2> You can\'t acc
 
 class DataBase extends Core{
 
-	private $conn;
+	public $conn;
 	private $db;
 	public $vendor;
 	public $sqlBuilder;

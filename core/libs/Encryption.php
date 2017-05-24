@@ -12,16 +12,16 @@ class Encryption extends Core{
 
 	public function encrypt($string, $key = null){
 		if(!$key){
-			$key = core::$config['encryption_key'];
+			$key = core::$coreConfig['encryption_key'];
 		}
 		$encrypt = mcrypt_encrypt(MCRYPT_BLOWFISH, strrev($key), $string, MCRYPT_MODE_ECB);
 		$encrypt2 = mcrypt_encrypt(MCRYPT_BLOWFISH, strrev(MD5($key)), $encrypt, MCRYPT_MODE_ECB);
 		return base64_encode($encrypt2);
 	}
-	
+
 	public function decrypt($string, $key = null){
 		if(!$key){
-			$key = core::$config['encryption_key'];
+			$key = core::$coreConfig['encryption_key'];
 		}
 		$base64 = base64_decode($string);
 		$encrypt2 = mcrypt_decrypt(MCRYPT_BLOWFISH, strrev(MD5($key)), $base64, MCRYPT_MODE_ECB);
