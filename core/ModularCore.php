@@ -293,7 +293,7 @@ if($params[0]){ // se algum controller for especificado
 				
 				
 				$controller = new $class();
-				$controller->$coreFunction(); die();
+				$controller->$coreFunction(); //die();
 			}
 	}
 

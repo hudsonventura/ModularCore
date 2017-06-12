@@ -8,35 +8,37 @@ class Console extends Core{
     function __construct() {
         parent::__construct();
     }
-    
+
     public function write($string){
-		if(core::$coreConfig['environment'] <> 'PRD'){
+		if(core::$coreConfig['console_show'] === true){
 			core::$console .= "<script>";
 			if($string <> ''){
-				
+
 				if(!is_array($string) && !is_object($string)){
 					core::$console .= "console.log('$string');";
 				}else{
 					if(is_array($string)){
-						foreach($string as $item){
-							$this->writePart($item);
+						$this->writePart('Array Begin --- \\n');
+						foreach($string as $key => $item){
+							$this->writePart('\\t'.$key.' => '.$item.'\\n');
 						}
+						$this->writePart('Array End --- \\n \\n');
 					}
 					if(is_object($string)){
-						core::$console .= 'console.log("'; 
+						core::$console .= 'console.log("';
 						print_r($string); //TODO: echo de um objeto
 						core::$console .= '");';
 					}
-					
+
 				}
 			}else{
 				core::$console .= "console.log('null');";
 			}
 			core::$console .= "console.log('ModularCore Console >> ".str_replace('\\', '\\\\', debug_backtrace()[0] ["file"])." at line ".debug_backtrace()[0] ["line"]."\\n\\n');</script>";
 		}
-		
+
     }
-	
+
 	 public function writePart($string){
 		if($string <> ''){
 			core::$console .= "console.log('$string');";

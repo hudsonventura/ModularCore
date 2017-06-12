@@ -270,7 +270,7 @@ class SQLBuilder extends DataBaseConnector{
 	             }
 	         }else{ //TO WRITE A VALUE TO DB (UPDADE, INSERT, DELETE...)
 	             $data =  $this->conn->exec($this->query);
-	             consoleWrite($this->query.'<br />'.$data. ' rows was affecteds.<br />');
+	             //consoleWrite($this->query.'<br />'.$data. ' rows was affecteds.<br />');
 				//
 	             if($data==0){
 	                 return "0 rows was affecteds.";
