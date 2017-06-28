@@ -20,9 +20,9 @@ abstract class Core {
 	}
 
 
-	
+
 	protected function loadLib($lib, $name = null){
-		
+
 		if($name == null){
 			$name = $lib;
 		}
@@ -39,17 +39,17 @@ abstract class Core {
 				include 'errors/400.php';
 				die();
 				echo '<h2>ERROR 404 - LOST LIBRARY</h2> Fail when open the LIB <b>'.$lib.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
-				
+
 			}
-			
+
 		}
 		require_once($libCore);
-		
+
 		if(class_exists($class)){
 			$this->libs->$name = new $class;
 		}else{
 			//echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
-			
+
 			//die();
 		}
 	}

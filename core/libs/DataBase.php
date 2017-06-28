@@ -89,6 +89,7 @@ class SQLBuilder extends DataBaseConnector{
 	function __construct($db) {
 		parent::__construct($db);
 		$this->connect();
+
 	}
 
 	public function select($string){
@@ -263,7 +264,7 @@ class SQLBuilder extends DataBaseConnector{
 	             $data = $data->fetchAll();
 	             if(count($data)==0){
 	                 consoleWrite($this->query.'<br />'.'Empty Set. Nothing returned from database.<br />');
-	                 return 'Empty Set. Nothing returned from database';
+	                 return false; //'Empty Set. Nothing returned from database';
 	             }else{
 	                 //consoleWrite($this->query.'<br />'.count($data).' row was displayed.<br />');
 	                 return $data;
@@ -279,11 +280,18 @@ class SQLBuilder extends DataBaseConnector{
 	             }
 	         }
 	     } catch (\PDOException $e) {
-	         //consoleWrite($e);
-	         return 'Fail to execute your query.';
+	         return false;
 	     }
 
 
+	 }
+
+	 public function beginTransaction(){
+		 return  $this->conn->beginTransaction();
+	 }
+
+	 public function commit(){
+		 return  $this->conn->commit();
 	 }
 
 	 public function getQuery(){
