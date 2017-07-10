@@ -41,42 +41,42 @@ if(isset($_GET['CoreVars'])){
 	$CoreVars = $_GET['CoreVars'];
 	$CoreVars = explode('/', trim($_GET['CoreVars']));
 	if($CoreVars[0] == ''){
-		array_pop($CoreVars); 
+		array_pop($CoreVars);
 	}
 	if(!isset($CoreVars[1])){
-		
+
 		require_once(BASE.'\modules\\config.php');
-		
+
 		header('Location: '.$CoreVars[0].'/'.$coreConfig['default_controller']);
 	}
-	
+
 		/* PROCURA O ARQUIVO CONFIG.PHP */
 		$file = BASE.'\modules\\'.$CoreVars[1].'\\config.php';
 		require_once(BASE.'\modules\\config.php');
 		if(file_exists($file)){
 			require_once($file);
 		}
-		
-		
-		
-}else{ 
+
+
+
+}else{
 	/* DEFINE THE  coreModule */
 	$coreModule = 'default';
 	if(@$CoreVars[0]!= 'default' && @$CoreVars[0] != null)
 		$coreModule = @$CoreVars[0];
 	else
 		$coreModule = 'default';
-	
+
 	$coreConfig['coreModule'] = $coreModule;
 
 	/* PROCURA O ARQUIVO CONFIG.PHP */
 	echo $coreModule;
 	$file = BASE.'\modules\\config.php';
-	
+
 	if(file_exists($file)){
 		require_once($file);
 	}
-	
+
 	header('Location: '.$coreConfig['default_module'].'/'.$coreConfig['default_controller']);
 	die();
 }
@@ -220,16 +220,16 @@ if($coreModule == 'core' || $coreModule == 'modules'){
 if($params[0]){ // se algum controller for especificado
 
 	if($coreModule){
-			
+
 			//ELIMINA OS DADOS DO PARAMS NAO USADOS (MODULO, CONTROLLER E FUNCTION)
 			try{
 				@array_shift($params);
 				@array_shift($params);
 				@array_shift($params);
 			}catch(Exception $e){
-				
+
 			}
-			
+
 			//ESCOLHE UM ARQUIVO PARA DAR UM REQUIRE
 			$file = null; //zera a variavel
 			$file = BASE.'/modules/'.$coreModule.'/controllers/'.$coreController.'.php';
@@ -237,12 +237,12 @@ if($params[0]){ // se algum controller for especificado
 				$tmpDir = BASE.'/modules/'.$coreModule.'/controllers';
 				$file = $tmpDir.'/'.$coreConfig['default_controller'].'.php';
 			}
-			
+
 			//PROCURA O ARQUIVO 404 CASO O ARQUIVO CONTROLLER DESEJADO NAO EXISTA
 			if(!file_exists($file)){
 				$file = BASE.'/modules/'.$coreConfig ["default_module"].'/controllers/error404.php';
-				
-				
+
+
 				if(file_exists($file)){
 					require $file;
 					define('ATUALFUNCTION', 'index');
@@ -252,23 +252,23 @@ if($params[0]){ // se algum controller for especificado
 					$file = BASE.'/core/errors/404.php';
 					require $file;
 				}
-				
-				
+
+
 			}else{
-				
-				require_once($file);		
+
+				require_once($file);
 				//define('CONTROLLERDIR', MODULEDIR.'/'.strtolower($coreModule));
 				//CRIA CONSTANTE ASSETS PARA SER UTLIZADO NAS REFERENCIAS DEPENDENCIAS
-				
-				
+
+
 				//Apache
 				define('ASSETS', BASEDIR.'modules\\'.$coreModule.'\\views\\assets\\');
-				
+
 				//IIS
 				//define('ASSETS', 'modules\\'.$coreModule.'\\views\\assets\\');
-				
-				
-				
+
+
+
 				$class = $coreController;
 				if(class_exists($class) === true){
 					//ESCOLHE E CHAMA A FUNÇÃO
@@ -280,18 +280,17 @@ if($params[0]){ // se algum controller for especificado
 							$coreFunction = $coreConfig['default_function'];
 						}
 					}
-	
-					
-	
+
+
+
 					define('ATUALFUNCTION', $coreFunction);
 					define('FUNCTIONDIR', $baseDir.$coreModule.'/'.$coreController.'/'.$coreFunction);
 				}else{
-					
-					include ('404.php');
+					include ('errors/404.php');
 					die();
 				}
-				
-				
+
+
 				$controller = new $class();
 				$controller->$coreFunction(); //die();
 			}
@@ -301,5 +300,5 @@ if($params[0]){ // se algum controller for especificado
 	//$coreBenchstart = microtime() - $coreBenchstart;
 	//$console = $console.'<br /><br /><br />------------<br />Generated page in '.number_format($coreBenchstart, 2).'s'.'<br />------------<br />';
 
-	
+
 }

@@ -166,6 +166,7 @@ class SQLBuilder extends DataBaseConnector{
 	 	//var_dump($this->query.' ----> '.strpos($this->query, 'SELECT ').strpos($this->query, ' FROM '));
 	 	if(strpos($this->query, 'SELECT ') === false && strpos($this->query, ' FROM ') ===false ){
 	 		$stmt = $this->conn->prepare($this->query);
+			// var_dump($stmt); die();
 	 		try
 			{
 				$return = $stmt->execute();
