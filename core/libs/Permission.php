@@ -32,10 +32,11 @@ class Permission extends Core{
 			if(is_array($this->required)){
 
 				foreach($this->required as $require){
-					if(strpos($permissions, $require)){
+					if(strpos($permissions, $require) > -1){
 						return true;
 					}
 				}
+
 			}else{
 
 
