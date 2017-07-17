@@ -14,9 +14,9 @@ abstract class Core {
 	protected static $console;
 
 	function __construct() {
-				core::$coreConfig = &$GLOBALS['coreConfig'];
-				$this->params = $GLOBALS['params'];
-				$this->libs = new \StdClass();
+		core::$coreConfig = &$GLOBALS['coreConfig'];
+		$this->params = $GLOBALS['params'];
+		$this->libs = new \StdClass();
 	}
 
 
