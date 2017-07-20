@@ -296,7 +296,7 @@ class SQLBuilder extends DataBaseConnector{
 	 }
 
 	 public function getQuery(){
-	     return $this->query.';';
+	     return $this->query;
 	 }
 
 	 public function setQuery($query){
