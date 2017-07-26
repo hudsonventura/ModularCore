@@ -93,11 +93,13 @@ class SQLBuilder extends DataBaseConnector{
 	}
 
 	public function select($string){
-		$this->query = 'SELECT '.$string;
+		$this->query = 'SELECT '.$string.'
+		';
 	}
 
 	 public function from($string){
-		$this->query = $this->query.' FROM '.$this->schema.$string;
+		 $this->query = $this->query.' FROM '.$this->schema.$string.'
+		';
 	 }
 
 	 public function where($string){
@@ -121,15 +123,18 @@ class SQLBuilder extends DataBaseConnector{
 	}
 
 	 public function join($string){
-		$this->query = $this->query.' JOIN '.$this->schema.$string.' ';
+		 $this->query = $this->query.' JOIN '.$this->schema.$string.' '.'
+		';
 	 }
 
 	 public function rightjoin($string){
-		$this->query = $this->query.' RIGHT JOIN '.$this->schema.$string.' ';
+		 $this->query = $this->query.' RIGHT JOIN '.$this->schema.$string.' '.'
+		';
 	 }
 
 	 public function leftjoin($string){
-		$this->query = $this->query.' LEFT JOIN '.$this->schema.$string.' ';
+		 $this->query = $this->query.' LEFT JOIN '.$this->schema.$string.' '.'
+		';
 	 }
 
 	 public function offset($string){
@@ -296,7 +301,7 @@ class SQLBuilder extends DataBaseConnector{
 	 }
 
 	 public function getQuery(){
-	     return $this->query;
+	     return nl2br ($this->query);
 	 }
 
 	 public function setQuery($query){
