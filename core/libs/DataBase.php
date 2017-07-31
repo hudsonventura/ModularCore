@@ -304,6 +304,10 @@ class SQLBuilder extends DataBaseConnector{
 	     return nl2br ($this->query);
 	 }
 
+	 public function query(){
+	     return $this->query;
+	 }
+
 	 public function setQuery($query){
 	     $this->query = $query;
 	 }
