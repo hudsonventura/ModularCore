@@ -117,14 +117,21 @@ abstract class Controller extends Core{
 		if(file_exists($modelCore)){
 			$class = $model;
 		}else{
-			//include 'errors/402.php';
-			echo '<h2>ERROR 404 - LOST MODEL</h2> Fail when open the MODEL <b>'.$model.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
-			die();
+
+			//BUSCA MODELS NA PASTA MODULES/DEFAULT/MODELS
+			$modelCore = DEFAULTFOLDER.'models/'.$model.'.php';
+			if(file_exists($modelCore)){
+				$class = $model;
+			}else{
+				//include 'errors/402.php';
+				echo '<h2>ERROR 402 - LOST MODEL</h2> Fail when open the MODEL <b>'.$model.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
+				die();
+			}
+
 		}
 
 
 		require_once($modelCore);
-
 		if(class_exists($class)){
 			$this->models->$name = new $class($name);
 			$this->models->$name->vars($this);

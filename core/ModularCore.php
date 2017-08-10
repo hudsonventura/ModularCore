@@ -160,6 +160,9 @@ include(CORE.'Core.php');
 
 $mod = implode('\\',$tmp);
 define('MODULEFOLDER', $mod.'\\modules\\'.$coreModule);
+define('ATUALMODULE', $coreModule);
+define('DEFAULTFOLDER', $mod.'\\modules\\default/');
+
 //define('MODULEPUBLIC', MODULEFOLDER.'\\public\\');
 //define('MODULEVIEW', MODULEFOLDER.'\\'.$coreConfig['views']);
 
@@ -264,8 +267,6 @@ if($params[0]){ // se algum controller for especificado
 				//Apache
 				define('ASSETS', BASEDIR.'modules\\'.$coreModule.'\\views\\assets\\');
 
-				//IIS
-				//define('ASSETS', 'modules\\'.$coreModule.'\\views\\assets\\');
 
 
 
