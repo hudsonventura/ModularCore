@@ -161,7 +161,9 @@ include(CORE.'Core.php');
 $mod = implode('\\',$tmp);
 define('MODULEFOLDER', $mod.'\\modules\\'.$coreModule);
 define('ATUALMODULE', $coreModule);
+
 define('DEFAULTFOLDER', $mod.'\\modules\\default/');
+
 
 //define('MODULEPUBLIC', MODULEFOLDER.'\\public\\');
 //define('MODULEVIEW', MODULEFOLDER.'\\'.$coreConfig['views']);
