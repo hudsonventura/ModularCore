@@ -15,6 +15,7 @@ define('CORE', __DIR__.'/');
 $tmp = explode('\\', __DIR__);
 array_pop($tmp);
 define('BASE', implode('\\',$tmp));
+define('BASEFOLDER', implode('\\',$tmp).'\\');
 
 
 /* VARRE O DIRETORIO DE MODULOS*/
@@ -76,9 +77,7 @@ if(isset($_GET['CoreVars'])){
 	if(file_exists($file)){
 		require_once($file);
 	}
-
 	header('Location: '.$coreConfig['default_module'].'/'.$coreConfig['default_controller']);
-	die();
 }
 
 
@@ -115,16 +114,16 @@ else
 $dir = explode('/', $_SERVER['PHP_SELF']);
 array_pop($dir);
 array_shift($dir);
-$PUBLICDEFAULTDIR = '/'.implode('/', $dir).'/modules/default/public/';
+$PUBLICDEFAULTDIR = '/'.implode('/', $dir).'/modules/default/views/';
 
 
 
 /*Corrige caso o sistema esteja no diretorio raiz*/
 if(substr($PUBLICDEFAULTDIR, 0, 2) == '//'){
 	$PUBLICDEFAULTDIR = substr($PUBLICDEFAULTDIR, 1);
-	define('PUBLICDEFAULTDIR', $PUBLICDEFAULTDIR);
+	define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
 }else{
-	define('PUBLICDEFAULTDIR', $PUBLICDEFAULTDIR);
+	define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
 }
 /*Corrige caso o sistema esteja no diretorio raiz*/
 array_pop($dir);array_pop($dir);
@@ -167,10 +166,6 @@ define('DEFAULTFOLDER', $mod.'\\modules\\default/');
 
 //define('MODULEPUBLIC', MODULEFOLDER.'\\public\\');
 //define('MODULEVIEW', MODULEFOLDER.'\\'.$coreConfig['views']);
-
-
-
-
 //define('DEFAULTPUBLIC', DEFAULTFOLDER.'public\\');
 //define('DEFAULTVIEW', DEFAULTFOLDER.$coreConfig['views'].'\\');
 
@@ -187,28 +182,34 @@ if($coreConfig['environment'] == 'PRD'){
 }
 
 
+$baseDir = substr($_SERVER['PHP_SELF'], 0, strlen($_SERVER['PHP_SELF'])-9);
+define('BASEDIR', $baseDir);
 
-
-//GERA O COREMODULE
+//GERA O MODULE
 $params = explode('/',$_GET['CoreVars']);
-if(isset($params))
-	$coreModule = $CoreVars[0];
+if(isset($params)){
+	if(file_exists(BASEFOLDER.'modules\\'.$params[0])){
+		$coreModule = $CoreVars[0];
+	}else{
+		$coreModule = 'default';
+	}
+}
 else
 	$coreModule = '';
 
 
-
-//GERA O CORECONTROLLER
+//GERA O CONTROLLER
 if(isset($params[1]) && $params[1] != null){
 	$coreController = $params[1];
 }else{
+	header('Location: '.BASEDIR.$coreModule.'/'.$coreConfig['default_controller']);
 	$coreController = $coreConfig['default_controller'];
 }
-$baseDir = substr($_SERVER['PHP_SELF'], 0, strlen($_SERVER['PHP_SELF'])-9);
-define('BASEDIR', $baseDir);
+
 define('MODULEDIR', $baseDir.$coreModule);
 define('CONTROLLERDIR', $baseDir.$coreModule.'/'.$coreController);
 define('ATUALCONTROLLER', $coreController);
+
 
 //GERA O CORE FUNCTION
 if(isset($params[2])){

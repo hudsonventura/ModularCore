@@ -58,7 +58,7 @@ class DataBaseConnector extends Core{
 		try{
 
 			if(core::$coreConfig['databases'][$this->db]['vendor'] <> 'oci'){
-				$this->conn = new \PDO(core::$coreConfig['databases'][$this->db]['vendor'].":dbname=".core::$coreConfig['databases'][$this->db]['dbname'].";host=".core::$coreConfig['databases'][$this->db]['host']."", core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
+				$this->conn = new \PDO(core::$coreConfig['databases'][$this->db]['vendor'].":dbname=".core::$coreConfig['databases'][$this->db]['dbname'].";host=".core::$coreConfig['databases'][$this->db]['host'], core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
 			}
 
 
