@@ -62,7 +62,7 @@ if(isset($_GET['CoreVars'])){
 
 }else{
 	/* DEFINE THE  coreModule */
-	$coreModule = 'default';
+	$coreModule = $coreConfig['default_module'];
 	if(@$CoreVars[0]!= 'default' && @$CoreVars[0] != null)
 		$coreModule = @$CoreVars[0];
 	else
