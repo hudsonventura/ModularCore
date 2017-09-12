@@ -73,7 +73,7 @@ class ActiveDirectory extends Core{
 		$all = array();
 		foreach($this->activeDirectory as $activeDirectory){
 			// Bind to the directory server.
-			$bd = @ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+			$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
 			if($bd){
 				if($value == null){
 					$filter="(&(objectCategory=person)(useraccountcontrol=512)(objectClass=user)(lockoutTime>=3))";
@@ -81,7 +81,6 @@ class ActiveDirectory extends Core{
 					$filter="(&(objectCategory=user)(objectCategory=person)($value))";
 				}
 				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
-				$info = ldap_get_entries($activeDirectory['ad'], $search);
 				$return= ldap_get_entries($activeDirectory['ad'],$search);
 				if($return['count'] > 0){
 					$return[0]['domain'] = $activeDirectory['domain'];
@@ -267,7 +266,10 @@ class ActiveDirectory extends Core{
 
 				$userdata["useraccountcontrol"][0]=512;
 				$userdata["lockoutTime"][0]=0;
-				$return = @ldap_modify($ad, $user['dn'], $userdata);
+				$userdata["accountexpires"][0]='9223372036854775807';
+
+				$return = ldap_modify($ad, $user['dn'], $userdata);
+
 				$user2 = $this->getUser('samaccountname='.$user['samaccountname'][0]);
 				if(ldap_errno($ad) || $user2['useraccountcontrol'][0] <> 512){
 	 				return false;
@@ -278,7 +280,6 @@ class ActiveDirectory extends Core{
 			return true;
 		}else{
 			return false;
-			//throw new \Exception(0);
 		}
 	}
 
