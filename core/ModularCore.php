@@ -62,7 +62,7 @@ if(isset($_GET['CoreVars'])){
 
 }else{
 	/* DEFINE THE  coreModule */
-	$coreModule = $coreConfig['default_module'];
+	$coreModule = $coreConfig['default_controller'];
 	if(@$CoreVars[0]!= 'default' && @$CoreVars[0] != null)
 		$coreModule = @$CoreVars[0];
 	else
@@ -191,7 +191,7 @@ if(isset($params)){
 	if(file_exists(BASEFOLDER.'modules\\'.$params[0])){
 		$coreModule = $CoreVars[0];
 	}else{
-		$coreModule = 'default';
+		$coreModule = $coreConfig['default_controller'];
 	}
 }
 else
