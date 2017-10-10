@@ -254,6 +254,66 @@ class ActiveDirectory extends Core{
     }
 
 
+	function addGroup($user, $group, $domain){
+		$activeDirectory = $this->activeDirectory[$domain];
+		$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+
+
+		if ($bd){
+			$connect = $activeDirectory['ad'];
+			if(isset($group)){
+				$mod['member'] = $user['distinguishedname'][0];
+
+				$r = @ldap_mod_add($connect, $group, $mod);
+				$result = ldap_error($connect);
+
+				if ($result = 'Already exists')
+				{
+					return true;
+				}
+
+
+				if($r){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}else{
+			return false;
+		}
+	}
+
+	function removeGroup($user, $group, $domain){
+		$activeDirectory = $this->activeDirectory[$domain];
+		$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+
+
+		if ($bd){
+			$connect = $activeDirectory['ad'];
+			if(isset($group)){
+				$mod['member'] = $user['distinguishedname'][0];
+
+				$r = @ldap_mod_del($connect, $group, $mod);
+				$result = ldap_error($connect);
+				if ($result = 'Server is unwilling to perform')
+				{
+					return true;
+				}
+
+
+				if($r){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}else{
+			return false;
+		}
+	}
+
+
 
 
     public function unblockUser($user, $domain, $requireNewPassword = null){
@@ -289,18 +349,11 @@ class ActiveDirectory extends Core{
 
 			$ad = $activeDirectory['ad'];
 	 		try{
-	 			if($user['samaccountname'][0] == 'belquihor.carvalho'){
-	 				$userdata["logonhours"] = hex2bin($turn);
-					$return = @ldap_modify($ad, $user['dn'], $userdata);
-	 				return array($user['samaccountname'][0], $turn, $return);
-	 			}
-	 			return array($user['samaccountname'][0], $turn, true);
-				//$userdata["logonhours"] = hex2bin($turn);
-				//$return = @ldap_modify($ad, $user['dn'], $userdata);
-
+	 			$userdata["logonhours"] = hex2bin($turn);
+				$return = ldap_modify($ad, $user['dn'], $userdata);
 				return $return;
 			}catch(Exception $e){
-				throw new \Exception(ldap_errno($ad));
+				return false;
 			}
 			return true;
 		}else{
@@ -333,12 +386,13 @@ class ActiveDirectory extends Core{
 
 	}
 
-public	function pwd_encryption( $newPassword ) {
+	public	function pwd_encryption( $newPassword ) {
 	$newPassword = "\"" . $newPassword . "\"";
 	$len = strlen( $newPassword );
 	$newPassw = "";
 	for ( $i = 0; $i < $len; $i++ ){ $newPassw .= "{$newPassword{$i}}\000"; } $userdata["unicodePwd"] = $newPassw; return $userdata;
 	 }
+
 	public function get_user_dn( $ldap_conn, $user_name ) {
 	/* Write the below details as per your AD setting */
 	$basedn = "DC=AD Test,DC=Local";

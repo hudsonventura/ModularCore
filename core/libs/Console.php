@@ -19,9 +19,7 @@ class Console extends Core{
 				}else{
 					if(is_array($string)){
 						$this->writePart('Array Begin --- \\n');
-						foreach($string as $key => $item){
-							$this->writePart('\\t'.$key.' => '.$item.'\\n');
-						}
+						$this->recursiveArray($string);
 						$this->writePart('Array End --- \\n \\n');
 					}
 					if(is_object($string)){
@@ -37,14 +35,33 @@ class Console extends Core{
 			core::$console .= "console.log('ModularCore Console >> ".str_replace('\\', '\\\\', debug_backtrace()[0] ["file"])." at line ".debug_backtrace()[0] ["line"]."\\n\\n');</script>";
 		}
 
-    }
+	}
 
-	 public function writePart($string){
+	private function recursiveArray($array){
+
+		foreach($array as $key => $item){
+			if(is_array($item)){
+				$this->writePart('\\t'.$key.' => ');
+				$this->recursiveArray($item);
+			}else{
+				if(is_string($item) || is_numeric($item)){
+					$string = str_replace(" ","_",preg_replace("/&([a-z])[a-z]+;/i", "$1", htmlentities(trim($item))));
+					$this->writePart($string);
+				}else{
+					$this->writePart('strange value');
+				}
+			}
+		}
+		$this->writePart('\\n');
+	}
+
+
+	 private function writePart($string){
 		if($string <> ''){
 			core::$console .= "console.log('$string');";
 		}else{
 			core::$console .= "console.log('null');";
 		}
-    }
+	}
 
 }

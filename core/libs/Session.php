@@ -8,11 +8,12 @@ class Session extends Core{
 
 	function __construct(){
 		parent::__construct();
-	
+
 	if(!isset($_SESSION)){
-		session_start(core::$coreConfig['session_name']);
+		session_name(core::$coreConfig['session_name']);
+		session_start(['cookie_lifetime'=> core::$coreConfig['session_expire_time']*60]);
 	}
-	
+
 	if(count($_SESSION)<=1){
 		$this->setData('session_expire_time', time());
 	}else{
@@ -22,74 +23,70 @@ class Session extends Core{
 			}else{
 				header ('Location:'.MODULEDIR.'/'.core::$coreConfig['controller_default']);
 			}
-			
+
 			$this->cleanSession();
 		}else{
 			$this->setData('session_expire_time', time());
 		}
 	}
 
-	
+
 	//consoleWrite($this->cleanTemp());
 	//consoleWrite($this->getData());
     }
-    
+
     public function getData($string = null){
 	if(isset($_SESSION[$string]))
 	    return $_SESSION[$string];
 	else
 	    return false;
     }
-    
-    public function get(){
-	return $_SESSION;
+	public function setData($string, $value){
+		if(isset($string) && isset($value)){
+			$_SESSION[$string] = $value;
+			//consoleWrite('Adding session '.$string.' => '.$value);
+			return true;
+		}else{
+			return false;
+		}
+
     }
-    
-    public function set($array){
-	$_SESSION = $array;
-	return true;
-    }
-    
-    public function setData($string, $value){
-	if(isset($string) && isset($value)){
-	    $_SESSION[$string] = $value;
-	    //consoleWrite('Adding session '.$string.' => '.$value);
-	    return true;
-	}else{
-	    return false;
-	}
-        
-    }
-    
-    public function cleanData($string = null){
+	public function cleanData($string = null){
         if(isset($_SESSION[$string]))
-		session_unset($_SESSION[$string]);
-	else
-		session_unset($_SESSION);
+			session_unset($_SESSION[$string]);
+		else
+			session_unset($_SESSION);
     }
-    
+
+
+    public function get(){
+		return $_SESSION;
+    }
+    public function set($array){
+		$_SESSION = $array;
+		return true;
+    }
 	public function cleanSession(){
 		session_destroy();
 		return true;
 	}
-    
-    public function setTemp($string, $value){
-        $_SESSION['temp_'.$string] = $value;
-        return true;
-    }
-    
-    public function getTemp($string){
+
+
+	public function setTemp($string, $value){
+		$_SESSION['temp_'.$string] = $value;
+		return true;
+	}
+	public function getTemp($string){
 		if(isset($_SESSION['temp_'.$string])){
-		    $return = $_SESSION['temp_'.$string];
-		    unset($_SESSION['temp_'.$string]);
-		    return $return;
+			$return = $_SESSION['temp_'.$string];
+			unset($_SESSION['temp_'.$string]);
+			return $return;
 		}
 		else{
-		    return false;
+			return false;
 		}
-    }
-    
-    public function cleanTemp(){
+	}
+	public function cleanTemp(){
 	$array[0] = 'Clean session temp items:';
         if(isset($_SESSION['temp_life_time'])){
             foreach($_SESSION as $key => $value){
