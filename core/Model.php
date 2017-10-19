@@ -10,15 +10,15 @@ abstract class Model extends Core{
 
 	function __construct() {
 		parent::__construct();
-		
+
 	}
-	
+
 	public function vars(&$controller){
 		$this->params = &$controller->params;
 		$this->libs = &$controller->libs;
 	}
-	
-	
+
+
 	protected function loadDb($db = null, $name = null){
 		if($db == null){
 			$db = core::$coreConfig['databases']['default_database'];
@@ -26,7 +26,7 @@ abstract class Model extends Core{
 		if($name == null){
 			$name = core::$coreConfig['databases']['default_database'];
 		}
-		
+
 		if(!class_exists('DataBase')){
 			try{
 				include_once CORE.'libs/DataBase.php';
@@ -34,11 +34,13 @@ abstract class Model extends Core{
 				echo 'The DataBase.php is not in lib folder. Please make sure that your instalation is ok';
 				die();
 			}
-			
+
 		}
-		$this->db = new \StdClass();
+		if(!isset($this->db)){
+			$this->db = new \StdClass();
+		}
 		$this->db->$name = new DataBase($db);
-		
+
 	}
 
 
