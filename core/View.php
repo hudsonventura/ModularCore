@@ -8,7 +8,7 @@ class View extends Core{
 	private $file;
 
 	function __construct($file, $coreView) {
-
+		parent::__construct();
 		$this->file = $file;
 		$this->viewVars = $coreView;
 	}
