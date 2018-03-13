@@ -63,7 +63,7 @@ class DataBaseConnector extends Core{
 
 
 			if(core::$coreConfig['databases'][$this->db]['vendor'] == 'oci'){
-				$this->conn = new \PDO("oci:dbname="." (DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP) (HOST = ".core::$coreConfig['databases'][$this->db]['host'].")(PORT = ".core::$coreConfig['databases'][$this->db]['port'].")))(CONNECT_DATA = (".core::$coreConfig['databases'][$this->db]['connectData']." = ".core::$coreConfig['databases'][$this->db]['connectValue'].") (TNS = ".core::$coreConfig['databases'][$this->db]['tns'].")))", core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
+				$this->conn = new \PDO("oci:dbname="." (DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP) (HOST = ".core::$coreConfig['databases'][$this->db]['host'].")(PORT = ".core::$coreConfig['databases'][$this->db]['port'].")))(CONNECT_DATA = (".core::$coreConfig['databases'][$this->db]['connectData']." = ".core::$coreConfig['databases'][$this->db]['connectValue'].") (TNS = ".core::$coreConfig['databases'][$this->db]['tns'].")));".core::$coreConfig['databases'][$this->db]['charset'], core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
 			}
 
 
@@ -195,9 +195,15 @@ class SQLBuilder extends DataBaseConnector{
 
 			if($result){
 				$return = array();
-				while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
-					array_push($return, $row);
+				try{
+					while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+						array_push($return, $row);
+					}
+				} Catch(\PDOException $e){
+					
 				}
+				
+				
 
 				return $return;
 			}
@@ -269,7 +275,7 @@ class SQLBuilder extends DataBaseConnector{
 	             //$data = $this->conn->query($this->query, \PDO::FETCH_ASSOC);//TODO: Provavel erro --------------------------------------
 	             $data = $data->fetchAll();
 	             if(count($data)==0){
-	                 consoleWrite($this->query.'<br />'.'Empty Set. Nothing returned from database.<br />');
+	                 //consoleWrite($this->query.'<br />'.'Empty Set. Nothing returned from database.<br />');
 	                 return false; //'Empty Set. Nothing returned from database';
 	             }else{
 	                 //consoleWrite($this->query.'<br />'.count($data).' row was displayed.<br />');

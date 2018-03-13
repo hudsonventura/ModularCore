@@ -12,7 +12,7 @@ abstract class Controller extends Core{
 
 
 	function __construct() {
-		$origin = explode('\\',debug_backtrace()[1]['file']);
+		$origin = explode('/',debug_backtrace()[1]['file']);
 		array_pop($origin);
 		if(end($origin) == 'views'){
 			echo '<h2>ERROR 403 - FORBIDDEN</h2> You can only instantiate a CONTROLLER or MODEL from a file in the CONTROLLER directory in the file <b>'.debug_backtrace()[1] ['file'].'</b> in the line <b>'.debug_backtrace()[1] ['line'].'</b>';
@@ -113,7 +113,7 @@ abstract class Controller extends Core{
 		}
 
 		//BUSCA MODELS NA PASTA MODULES/modulousuario/MODELS
-		$modelCore = MODULEFOLDER.'\\models\\'.$model.'.php';
+		$modelCore = MODULEFOLDER.'/models/'.$model.'.php';
 		if(file_exists($modelCore)){
 			$class = $model;
 		}else{
@@ -140,6 +140,16 @@ abstract class Controller extends Core{
 			echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
 			die();
 		}
+	}
+
+	protected function redirect($controller = null){
+		if($controller){
+			$location = "Location: ".BASEDIR.$this->core['module'].'/'.$controller;
+			header($location);
+		}else{
+			die("Erro on load controller to redirect");
+		}
+		
 	}
 }
 

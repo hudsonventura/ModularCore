@@ -39,6 +39,8 @@ abstract class Model extends Core{
 		if(!isset($this->db)){
 			$this->db = new \StdClass();
 		}
+
+
 		$this->db->$name = new DataBase($db);
 
 	}
