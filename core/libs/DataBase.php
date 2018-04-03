@@ -228,7 +228,7 @@ class SQLBuilder extends DataBaseConnector{
 	               }
 
 	           }else{
-	               $this->query = $this->query.$field.' ,';          //NUMERIC VALUE
+	               $this->query = $this->query.'\''.$field.'\' ,';          //NUMERIC VALUE
 	           }
 
 	     }
