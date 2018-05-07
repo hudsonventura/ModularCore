@@ -83,6 +83,46 @@ abstract class Core {
 		$by   = array( 'a','a','a','a','a','e','e','e','e','i','i','i','o','o','o','o','o','u','u','u','u','A','A','E','I','O','U','n','c','C',' ',' ',' ',' ',' ',' ',' ',' ','$','%',' ',' ',' ',' ',' ',' ','_','_','_','_' );
 		return str_replace($what, $by, $string);
 	}
+	
+	protected function loadModel($model, $name = null){
+
+		if($name == null){
+			$name = $model;
+		}
+
+		//BUSCA MODELS NA PASTA MODULES/modulousuario/MODELS
+		$modelCore = MODULEFOLDER.'/models/'.$model.'.php';
+		if(file_exists($modelCore)){
+			$class = $model;
+		}else{
+
+			//BUSCA MODELS NA PASTA MODULES/DEFAULT/MODELS
+			$modelCore = DEFAULTFOLDER.'models/'.$model.'.php';
+			if(file_exists($modelCore)){
+				$class = $model;
+			}else{
+				//include 'errors/402.php';
+				echo '<h2>ERROR 402 - LOST MODEL</h2> Fail when open the MODEL <b>'.$model.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
+				die();
+			}
+
+		}
+
+
+		require_once($modelCore);
+		if(class_exists($class)){
+			if(!isset($this->models)){
+				$this->models = new \stdClass();
+			}
+			
+			$this->models->$name = new $class($name);
+			$this->models->$name->vars($this);
+		}else{
+			//include 'errors/402.php';
+			echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
+			die();
+		}
+	}
 
 
 
