@@ -106,50 +106,29 @@ abstract class Controller extends Core{
 		//unset($this);
 	}
 
-	protected function loadModel($model, $name = null){
+	
 
-		if($name == null){
-			$name = $model;
-		}
-
-		//BUSCA MODELS NA PASTA MODULES/modulousuario/MODELS
-		$modelCore = MODULEFOLDER.'/models/'.$model.'.php';
-		if(file_exists($modelCore)){
-			$class = $model;
+	protected function redirect($controller, $time = null){
+		if(substr($controller, 0, 4) == 'http'){
+			$location = "$controller";
 		}else{
+			$location = BASEDIR.$this->core['module'].'/'.$controller;
+		}
+		//header($location);
 
-			//BUSCA MODELS NA PASTA MODULES/DEFAULT/MODELS
-			$modelCore = DEFAULTFOLDER.'models/'.$model.'.php';
-			if(file_exists($modelCore)){
-				$class = $model;
-			}else{
-				//include 'errors/402.php';
-				echo '<h2>ERROR 402 - LOST MODEL</h2> Fail when open the MODEL <b>'.$model.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
-				die();
-			}
-
+		if(!$time){
+			$time = 0;
 		}
 
-
-		require_once($modelCore);
-		if(class_exists($class)){
-			$this->models->$name = new $class($name);
-			$this->models->$name->vars($this);
-		}else{
-			//include 'errors/402.php';
-			echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
-			die();
-		}
+		die("<meta http-equiv='refresh' content='$time;url=$location'>");
 	}
 
-	protected function redirect($controller = null){
-		if($controller){
-			$location = "Location: ".BASEDIR.$this->core['module'].'/'.$controller;
-			header($location);
-		}else{
-			die("Erro on load controller to redirect");
+	protected function refresh($time = null){
+		if(!$time){
+			$time = 0;
 		}
-		
+
+		die("<meta http-equiv='refresh' content='$time'>");
 	}
 }
 
