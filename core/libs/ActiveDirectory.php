@@ -97,6 +97,37 @@ class ActiveDirectory extends Core{
 		return $all;
 	}
 
+	public function searchUsers($field, $list){ //IN ALL DOMAINS
+		$all = array();
+		foreach($this->activeDirectory as $activeDirectory){
+			// Bind to the directory server.
+			$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+			if($bd){
+				$filter = '(&(objectCategory=user)(objectCategory=person)(|';
+				foreach ($list as $key => $value) {
+					$filter .= "($field=$value)";
+				}
+				$filter .= '))';
+				
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+				$return= ldap_get_entries($activeDirectory['ad'],$search);
+				if($return['count'] > 0){
+					for ($i=0; $i < $return['count']; $i++) { 
+						$return[$i]['domain'] = $activeDirectory['domain'];
+						array_push($all, $return);
+					}
+				}
+			}else{
+				//consoleWrite("Cant BIND to Active Directory!");
+				echo "Cant BIND to Active Directory!";
+			}
+		}
+		if(empty($all)){
+			return array('domain' => 'No domain informed');
+		}
+		return $all;
+	}
+
     public function searchDomainUser($value, $domain){ //IN CHOSEN ONE DOMAIN
 		$all = array();
 		$activeDirectory = $this->getDomain($domain);
