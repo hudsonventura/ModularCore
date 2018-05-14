@@ -63,7 +63,7 @@ class DataBaseConnector extends Core{
 
 
 			if(core::$coreConfig['databases'][$this->db]['vendor'] == 'oci'){
-				$this->conn = new \PDO("oci:dbname="." (DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP) (HOST = ".core::$coreConfig['databases'][$this->db]['host'].")(PORT = ".core::$coreConfig['databases'][$this->db]['port'].")))(CONNECT_DATA = (".core::$coreConfig['databases'][$this->db]['connectData']." = ".core::$coreConfig['databases'][$this->db]['connectValue'].") (TNS = ".core::$coreConfig['databases'][$this->db]['tns'].")))", core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
+				$this->conn = new \PDO("oci:dbname="." (DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP) (HOST = ".core::$coreConfig['databases'][$this->db]['host'].")(PORT = ".core::$coreConfig['databases'][$this->db]['port'].")))(CONNECT_DATA = (".core::$coreConfig['databases'][$this->db]['connectData']." = ".core::$coreConfig['databases'][$this->db]['connectValue'].") (TNS = ".core::$coreConfig['databases'][$this->db]['tns'].")));".core::$coreConfig['databases'][$this->db]['charset'], core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
 			}
 
 
@@ -195,9 +195,15 @@ class SQLBuilder extends DataBaseConnector{
 
 			if($result){
 				$return = array();
-				while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
-					array_push($return, $row);
+				try{
+					while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+						array_push($return, $row);
+					}
+				} Catch(\PDOException $e){
+					
 				}
+				
+				
 
 				return $return;
 			}
@@ -222,7 +228,7 @@ class SQLBuilder extends DataBaseConnector{
 	               }
 
 	           }else{
-	               $this->query = $this->query.$field.' ,';          //NUMERIC VALUE
+	               $this->query = $this->query.'\''.$field.'\' ,';          //NUMERIC VALUE
 	           }
 
 	     }
@@ -269,7 +275,7 @@ class SQLBuilder extends DataBaseConnector{
 	             //$data = $this->conn->query($this->query, \PDO::FETCH_ASSOC);//TODO: Provavel erro --------------------------------------
 	             $data = $data->fetchAll();
 	             if(count($data)==0){
-	                 consoleWrite($this->query.'<br />'.'Empty Set. Nothing returned from database.<br />');
+	                 //consoleWrite($this->query.'<br />'.'Empty Set. Nothing returned from database.<br />');
 	                 return false; //'Empty Set. Nothing returned from database';
 	             }else{
 	                 //consoleWrite($this->query.'<br />'.count($data).' row was displayed.<br />');
@@ -318,4 +324,631 @@ class SQLBuilder extends DataBaseConnector{
 	}
 
 
+}
+
+
+class Orm
+{
+
+	private $query = '';
+	public $stmt;
+	public $lastError;
+	private $return;
+	
+
+	public function getQuery()
+	{
+		return $this->query;
+	}
+
+	public function __construct(&$dbConnection){
+		
+		if (!is_a ($dbConnection, 'PDO')) {
+			die('You have to send a PDO object');
+		}
+		$this->dbConnection = $dbConnection;
+	}
+
+	public function select($columns = '*'){
+		$this->query = "SELECT $columns ";
+		return $this;
+	}
+
+	public function from($table){
+		$this->query .= "FROM $table ";
+		return $this;
+	}
+	
+	public function join($table){
+		$this->query .= "JOIN $table ";
+		return $this;
+	}
+	
+	public function leftjoin($table){
+		$this->query .= "LEFT JOIN $table ";
+		return $this;
+	}
+	
+	public function rightjoin($table){
+		$this->query .= "RIGHT JOIN $table ";
+		return $this;
+	}
+
+	public function limit($value){
+		$this->query .= "LIMIT $value ";
+		return $this;
+	}
+
+	public function offset($value){
+		$this->query .= "OFFSET $value ";
+		return $this;
+	}
+
+	public function where($value){
+		$this->query .= "WHERE $value ";
+		return $this;
+	}
+
+	public function orderby($value){
+		$this->query .= "ORDER BY $value ";
+		return $this;
+	}
+
+	public function groupby($value){
+		$this->query .= "GROUP BY $value ";
+		return $this;
+	}
+	
+
+	
+	public function insert($table, $array){
+	     $this->query = 'INSERT INTO '.$table.' ( ';
+	     foreach(array_keys($array) as $field){
+	         $this->query = $this->query.'"'.$field.'"'.' ,';
+	     }
+	     $this->query = substr($this->query, 0, strlen($this->query)-2).') VALUES (';
+	     foreach(array_values($array) as $field){
+	           if(!is_numeric($field) && !is_float($field)){
+	               if(strpos($field, 'nextval') > -1){
+	                   $this->query = $this->query.'"'.$field.'"'.' ,';      //NEXTVAL STRING (Postgres)
+	               }else{
+	                   $this->query = $this->query."'".$field."' ,"; //COMM STRING
+	               }
+
+	           }else{
+	               $this->query = $this->query.$field.' ,';          //NUMERIC VALUE
+	           }
+
+	     }
+	     $this->query = substr($this->query, 0, strlen($this->query)-2).')';
+
+	    return $this;
+	}
+
+	public function update($table, $array){
+		$this->query = 'UPDATE '.$table.' SET ';
+		 for ($i=0; $i<= count($array)-1; $i++){
+			 if(is_string(array_values($array)[$i])){
+				 $this->query = $this->query.'"'.array_keys($array)[$i].'"'." = '".array_values($array)[$i]."', ";
+			 }else{
+				 if(is_numeric(array_values($array)[$i]) || is_float(array_values($array)[$i])){
+					 $this->query = $this->query.'"'.array_keys($array)[$i].'"'." = ".array_values($array)[$i].", ";
+					 }else{
+						 if(is_null(array_values($array)[$i])){
+							 $this->query = $this->query.'"'.array_keys($array)[$i].'"'." = NULL, ";
+						 }else{
+							 if(array_values($array)[$i] == ''){
+								 $this->query = $this->query.'"'.array_keys($array)[$i].'"'." = NULL, ";
+							 }else{
+								 $this->query = $this->query.'"'.array_keys($array)[$i].'"'." = ".array_values($array)[$i].", ";
+							 }
+						 }
+				 }
+			 }
+			}
+ 
+		$this->query = substr($this->query, 0, strlen($this->query)-2);
+		return $this;
+	}
+	
+
+
+	public function bindValue($collumn, $value){
+		$this->prepare();
+		try {
+			switch ($value) {
+
+				case is_integer($value) === 1:
+					$return = $this->stmt->bindValue($collumn, $value, \PDO::PARAM_INT);
+				break;
+
+				case is_bool($value) === 1:
+					$return = $this->stmt->bindValue($collumn, $value, \PDO::PARAM_BOOL);
+				break;
+
+				case is_null($value) === 1:
+					$return = $this->stmt->bindValue($collumn, $value, \PDO::PARAM_NULL);
+				break;
+
+				case is_file($value) === 1:
+					$return = $this->stmt->bindValue($collumn, $value, \PDO::PARAM_LOB);
+				break;
+
+				default:
+					$return = $this->stmt->bindValue($collumn, $value, \PDO::PARAM_STR);
+				break;
+			}
+		} catch (PDOException $e) {
+			return $e;
+		}
+		return $return;
+	}
+	
+	private function prepare(){
+		if (!$this->stmt || $this->stmt->queryString <> $this->query) { 
+			$this->stmt = $this->dbConnection->prepare($this->query);
+		}
+	}
+
+
+	public function fetchOne($collumn = null){
+		$success = $this->fetch();
+		if ($success) {
+			$return = $this->fetch();
+			if (count($return)) {
+				if ($collumn) {
+					return $return[0][$collumn];
+				}
+				return $return[0];
+			}
+		}
+		return false;
+	}
+
+	public function fetch(){
+		$this->prepare();
+		try{
+			$success = $this->stmt->execute();
+			if ($success) {
+				return $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
+			}
+			return false;
+		}catch(\PDOException $e){
+			$this->lastError = $e;
+		}
+		return false;
+	}
+
+	public function execute(){
+		$this->prepare();
+		try{
+			$success = $this->stmt->execute();
+			if ($success) {
+				return true;
+			}
+			return false;
+		}catch(\PDOException $e){
+			$this->lastError = $e;
+		}
+		return false;
+	}
+	
+	public function getLastError(){
+		return $this->lastError;
+	}
+	
+	public function debugDumpParams(){
+		return $this->stmt->debugDumpParams();
+	}
+
+
+
+
+
+
+
+	public function sync($file){
+
+		if(!file_exists($file))
+		{
+			return false;
+		}
+
+		require_once($file);
+
+
+		$lines = file ($file);
+
+		//Class definition
+		for ($i=0; $i < count($lines); $i++) {
+			$line = $lines[$i];
+
+			if (trim($line) == '#MCORM-Namespace') {
+				$lineNamespace = $lines[$i+1];
+				$lineNamespaceExploded = explode(' ', $lineNamespace);
+
+				for ($i=0; $i < count($lineNamespaceExploded); $i++) { 
+					if ($lineNamespaceExploded[$i] == 'namespace') {
+						$namespace = explode (';', $lineNamespaceExploded[$i+1])[0];
+					}
+				}
+			}
+
+			if (trim($line) == '#MCORM-Table') {
+				$lineClass = $lines[$i+1];
+
+				$lineClassExploded = explode(' ', $lineClass);
+
+				for ($i=0; $i < count($lineClassExploded); $i++) { 
+					if ($lineClassExploded[$i] == 'class') {
+						$className = $lineClassExploded[$i+1];
+						goto ClassNamespaceDefined;
+					}
+				}
+
+			}
+
+		}
+
+		ClassNamespaceDefined:
+
+
+		
+		if (!class_exists("\\$namespace\\$className"))
+		{
+			return false;
+		}
+
+		$table_exists = $this->verifyIfTableExists($className);
+		if(!$table_exists){
+			$created_table = $this->createTable($className);
+		}
+
+		$classAttributes = $this->getAttibutesFromClass($file);
+		$dbAttributes = $this->getAttibutesFromdb($className);
+
+
+		$attributes = $this->compareAttibutes($classAttributes, $dbAttributes);
+		echo '<br>------------------------ > atributos do banco: <br>';
+		var_dump($dbAttributes);
+
+		echo '<br>------------------------ > atributos da classe: <br>';
+		var_dump($classAttributes);
+
+
+		var_dump($attributes);
+
+
+		$result = $this->writeDataToDB($attributes);
+
+		var_dumP($result);
+
+
+
+	}
+	private function verifyIfTableExists($table){
+		$stmt = $this->dbConnection->prepare("select * from $table limit 1");
+
+		try{
+			$result = $stmt->execute();
+			$return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+		}catch(\PDOException $e){
+			if (strpos($e->getMessage(), 'Undefined table')) {
+				return false;
+			}
+		}
+		if($result){
+			return $table;
+		}
+		return false;
+	}
+	private function createTable($table){
+
+		$stmt = $this->dbConnection->prepare("CREATE TABLE IF NOT EXISTS $table();");
+
+		try{
+			$result = $stmt->execute();
+		}catch(\PDOException $e){
+			echo $e->getMessage();
+			return false;
+		}
+		if($result){
+			return $table;
+		}
+		return false;
+	}
+	private function getAttibutesFromClass($file){
+
+		$lines = file ($file);
+
+		$columns = array();
+		for ($i=0; $i < count($lines); $i++) {
+			$line = $lines[$i];
+
+			//Class definition
+			if (!isset($class)) {
+				if (trim($line) == '#MCORM-Table') {
+					$lineTable = $lines[$i+1];
+					$attributes = explode(' ', $lineTable);
+					for ($j=0; $j < count($attributes); $j++) {
+						if ($attributes[$j] == 'class') {
+							$class = trim($attributes[$j+1]);
+							array_push($columns, array('table' => $class));
+						}
+					}
+				}
+			}
+
+			//Attributes definition
+			if (strpos($line, '#MCORM-Attribuite') > 0)
+			{
+				$lineComponent = explode('|', $line);
+				for ($j=0; $j < count($lineComponent); $j++) {
+					$column = array();
+					if (trim($lineComponent[$j]) == '#MCORM-Attribuite') {
+
+						//get column name
+						$lineAttributeName = $lines[$i+1];
+						$lineAttributeNameComponents = explode(' ', $lineAttributeName);
+						foreach ($lineAttributeNameComponents as $attribute) {
+							if (substr($attribute, 0, 1) == '$') {
+								if(strpos($attribute, ';')){
+									$column['name'] = substr($attribute, 1, strpos($attribute, ';')-1);
+								}else{
+									$column['name'] = substr($attribute, 1);
+								}
+
+							}
+						}
+
+						//get everything else
+						$column['type']         = trim($lineComponent[1]);
+						$column['lenght']         = trim($lineComponent[2]);
+						$column['canbenull']    = trim($lineComponent[3]);
+						$column['primarykey']   = trim($lineComponent[4]);
+						$column['defaultvalue']  = trim($lineComponent[5]);
+
+						array_push($columns, $column);
+					}
+				}
+			}
+		}
+		return $columns;
+	}
+	private function getAttibutesFromdb($className){
+		$table = strtolower(trim($className));
+
+		$query = "SELECT column_name FROM information_schema.columns WHERE table_name =:table;";
+		$stmt = $this->dbConnection->prepare($query);
+
+		$stmt->bindValue(':table', $table, \PDO::PARAM_STR);
+		try{
+			$result = $stmt->execute();
+			$return = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+		}catch(\PDOException $e){
+			return $e->getMessage();
+		}
+		return $return;
+	}
+	private function compareAttibutes($classAttributes, $dbAttributes){
+		$attributesAlter = array();
+		$attributesAdd = array();
+		$attributesRemove = array();
+
+		$classAttributeClean = array();
+		for ($i=1; $i < count($classAttributes); $i++)
+		{
+			$classAttribute = $classAttributes[$i]['name'];
+
+			if (count($dbAttributes) > 0) {
+				foreach($dbAttributes as $dbAttribute)
+				{
+					if (!in_array($classAttribute, $attributesAdd)) {
+						array_push($attributesAdd, $classAttribute);
+					}
+
+					if ($classAttribute == $dbAttribute) {
+						array_push($attributesAlter, $classAttribute);
+					}
+				}
+			}else{
+				array_push($attributesAdd, $classAttribute);
+			}
+
+		}
+		$attributesAdd = array_diff($attributesAdd, $dbAttributes);
+		$attributesRemove = array_diff($dbAttributes, $attributesAdd);
+		$attributesRemove = array_diff($attributesRemove, $attributesAlter);
+
+		$returnAttributesAdd = array();
+		for ($i=1; $i < count($classAttributes); $i++)
+		{
+			if (in_array($classAttributes[$i]['name'], $attributesAdd)) {
+				array_push($returnAttributesAdd, $classAttributes[$i]);
+			}
+		}
+
+		$returnAttributesAlter = array();
+		for ($i=1; $i < count($classAttributes); $i++)
+		{
+			if (in_array($classAttributes[$i]['name'], $attributesAlter)) {
+				array_push($returnAttributesAlter, $classAttributes[$i]);
+			}
+		}
+		return array('table'=> strtolower($classAttributes[0]['table']), 'add'=> $returnAttributesAdd , 'alter'=> $returnAttributesAlter , 'remove'=> $attributesRemove);
+	}
+	private function writeDataToDB($attributes){
+		$table = $attributes['table'];
+		$add = $attributes['add'];
+		$alter = $attributes['alter'];
+		$remove = $attributes['remove'];
+
+
+		$query = 'ALTER TABLE '.$table.' ';
+		//remove
+		if (count($remove) > 0) {
+			foreach ($remove as $removeColumn) {
+				$query .= 'DROP COLUMN "'.$removeColumn.'", ';
+			}
+		}
+
+		$primaryKey = '';
+
+		//alter
+		if (count($alter) > 0) {
+			foreach ($alter as $alterColumn) {
+
+				switch ($alterColumn['type'] ) {
+					case 'SERIAL':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE int'.$alterColumn['lenght'].', ';
+						$primaryKey = 'ADD PRIMARY KEY ('.$alterColumn['name'].')  ';
+					break;
+
+					case 'VARCHAR':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE VARCHAR('.$alterColumn['lenght'].') COLLATE "default", ';
+					break;
+
+					case 'CHAR':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE CHAR('.$alterColumn['lenght'].') COLLATE "default", ';
+					break;
+
+					case 'INT':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE INT'.$alterColumn['lenght'].', ';
+					break;
+
+					case 'BOOLEAN':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE BOOL, ';
+						break;
+
+					case 'FLOAT':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE FLOAT'.$alterColumn['lenght'].' USING '.$alterColumn['name'].'::real, ';
+						break;
+
+
+					case 'TEXT':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE TEXT, ';
+						break;
+
+					case 'DATE':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE DATE, ';
+						break;
+
+					case 'TIME':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE TIME, ';
+						break;
+
+
+					case 'TIMESTAMP':
+						$query .= 'ALTER COLUMN "'.$alterColumn['name'].'" TYPE TIMESTAMP, ';
+						break;
+
+					default:
+						$query .= ' ##THIS EDITING A NEW TYPE ('.$alterColumn['type'].'). PLEASE SEE THE DOCUMENTATION## ';
+					break;
+
+
+
+
+				}
+
+
+				if ($alterColumn['canbenull'] == 'NOT NULL') {
+					$query .= ' ALTER COLUMN "'.$alterColumn['name'].'" SET NOT NULL, ';
+				}else{
+					$query .= ' ALTER COLUMN "'.$alterColumn['name'].'" DROP NOT NULL, ';
+				}
+
+				if ($alterColumn['defaultvalue'] <> 'NULL') {
+					$query .= ' ALTER COLUMN "'.$alterColumn['name'].'" SET DEFAULT '.$alterColumn['defaultvalue'].', ';
+				}
+
+
+			}
+		}
+
+
+		//add
+		if (count($add) > 0) {
+			foreach ($add as $addColumn) {
+				$query .= 'ADD COLUMN "'.$addColumn['name'].'" ';
+
+
+				switch ($addColumn['type']) {
+					case 'SERIAL':
+						$query .= 'SERIAL'.$addColumn['lenght'].' ';
+						$primaryKey = 'ADD PRIMARY KEY ('.$addColumn['lenght'].')  ';
+						break;
+
+					case 'VARCHAR':
+						$query .= 'VARCHAR('.$addColumn['lenght'].') ';
+						break;
+
+					case 'INT':
+						$query .= 'int'.$addColumn['lenght'].' ';
+						break;
+
+					case 'CHAR':
+						$query .= 'CHAR('.$addColumn['lenght'].') ';
+						break;
+
+					case 'BOOLEAN':
+						$query .= 'BOOL ';
+						break;
+
+					case 'FLOAT':
+						$query .= 'FLOAT'.$addColumn['lenght'].' ';
+						break;
+
+
+					case 'TEXT':
+						$query .= 'TEXT ';
+						break;
+
+					case 'DATE':
+						$query .= 'DATE ';
+						break;
+
+					case 'TIME':
+						$query .= 'TIME('.$addColumn['lenght'].') ';
+						break;
+
+
+					case 'TIMESTAMP':
+						$query .= 'TIMESTAMP('.$addColumn['lenght'].') ';
+						break;
+
+					default:
+						$query .= ' ##THIS ADDING A NEW TYPE ('.$addColumn['type'].').. PLEASE SEE THE DOCUMENTATION## ';
+						break;
+				}
+
+				$addColumn['type'];
+
+
+				if ($addColumn['canbenull'] == 'NOT NULL') {
+					$query .= $addColumn['canbenull'];
+				}
+				$query .= ', ';
+
+				if ($addColumn['defaultvalue'] <> 'NULL') {
+					$query .= ' ALTER COLUMN "'.$addColumn['name'].'" SET DEFAULT '.$addColumn['defaultvalue'].', ';
+				}
+
+			}
+		}
+		$query = substr($query, 0, strlen($query.$primaryKey)-2);
+
+
+		
+		VAR_DUMP($primaryKey); DIE();
+
+		echo nl2br($query);
+
+		$stmt = $this->dbConnection->prepare($query);
+		$result = $stmt->execute();
+		$return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+		var_dump($result);
+		var_dump($return);
+	}
 }

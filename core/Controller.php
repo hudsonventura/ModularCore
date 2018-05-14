@@ -12,7 +12,7 @@ abstract class Controller extends Core{
 
 
 	function __construct() {
-		$origin = explode('\\',debug_backtrace()[1]['file']);
+		$origin = explode('/',debug_backtrace()[1]['file']);
 		array_pop($origin);
 		if(end($origin) == 'views'){
 			echo '<h2>ERROR 403 - FORBIDDEN</h2> You can only instantiate a CONTROLLER or MODEL from a file in the CONTROLLER directory in the file <b>'.debug_backtrace()[1] ['file'].'</b> in the line <b>'.debug_backtrace()[1] ['line'].'</b>';
@@ -106,40 +106,29 @@ abstract class Controller extends Core{
 		//unset($this);
 	}
 
-	protected function loadModel($model, $name = null){
+	
 
-		if($name == null){
-			$name = $model;
-		}
-
-		//BUSCA MODELS NA PASTA MODULES/modulousuario/MODELS
-		$modelCore = MODULEFOLDER.'\\models\\'.$model.'.php';
-		if(file_exists($modelCore)){
-			$class = $model;
+	protected function redirect($controller, $time = null){
+		if(substr($controller, 0, 4) == 'http'){
+			$location = "$controller";
 		}else{
+			$location = BASEDIR.$this->core['module'].'/'.$controller;
+		}
+		//header($location);
 
-			//BUSCA MODELS NA PASTA MODULES/DEFAULT/MODELS
-			$modelCore = DEFAULTFOLDER.'models/'.$model.'.php';
-			if(file_exists($modelCore)){
-				$class = $model;
-			}else{
-				//include 'errors/402.php';
-				echo '<h2>ERROR 402 - LOST MODEL</h2> Fail when open the MODEL <b>'.$model.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
-				die();
-			}
-
+		if(!$time){
+			$time = 0;
 		}
 
+		die("<meta http-equiv='refresh' content='$time;url=$location'>");
+	}
 
-		require_once($modelCore);
-		if(class_exists($class)){
-			$this->models->$name = new $class($name);
-			$this->models->$name->vars($this);
-		}else{
-			//include 'errors/402.php';
-			echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
-			die();
+	protected function refresh($time = null){
+		if(!$time){
+			$time = 0;
 		}
+
+		die("<meta http-equiv='refresh' content='$time'>");
 	}
 }
 

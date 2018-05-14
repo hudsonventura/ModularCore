@@ -12,10 +12,21 @@ $coreConfig ['startTime'] = $coreStartTime;
 
 /*DEFINE AS CONSTANTES RAIS DO SISTEMA */
 define('CORE', __DIR__.'/');
-$tmp = explode('\\', __DIR__);
-array_pop($tmp);
-define('BASE', implode('\\',$tmp));
-define('BASEFOLDER', implode('\\',$tmp).'\\');
+if(strpos(CORE, '\\') === false){
+	//server linux
+	$tmp = explode('/', __DIR__);
+	array_pop($tmp);
+	define('BASE', implode('/',$tmp));
+	define('BASEFOLDER', implode('/',$tmp).'/');
+}else{
+	//server windows
+	$tmp = explode('\\', __DIR__);
+	array_pop($tmp);
+	define('BASE', implode('\\',$tmp));
+	define('BASEFOLDER', implode('\\',$tmp).'\\');
+	
+}
+
 
 
 /* VARRE O DIRETORIO DE MODULOS*/
@@ -46,14 +57,16 @@ if(isset($_GET['CoreVars'])){
 	}
 	if(!isset($CoreVars[1])){
 
-		require_once(BASE.'\modules\\config.php');
+		require_once(BASE.'/modules/config.php');
 
-		header('Location: '.$CoreVars[0].'/'.$coreConfig['default_controller']);
+		$location = 'Location: '.$CoreVars[0].'/'.$coreConfig['default_controller'];
+		header($location);
+		die("<script>Console.Log('Redirecting to $location')</script>");
 	}
 
 		/* PROCURA O ARQUIVO CONFIG.PHP */
-		$file = BASE.'\modules\\'.$CoreVars[1].'\\config.php';
-		require_once(BASE.'\modules\\config.php');
+		$file = BASE.'/modules/'.$CoreVars[1].'/config.php';
+		require_once(BASE.'/modules/config.php');
 		if(file_exists($file)){
 			require_once($file);
 		}
@@ -62,8 +75,9 @@ if(isset($_GET['CoreVars'])){
 
 }else{
 	/* DEFINE THE  coreModule */
+	require_once(BASE.'/modules/config.php');
 	$coreModule = $coreConfig['default_controller'];
-	if(@$CoreVars[0]!= 'default' && @$CoreVars[0] != null)
+	if(isset($CoreVars) && $CoreVars[0] != null)
 		$coreModule = @$CoreVars[0];
 	else
 		$coreModule = 'default';
@@ -71,19 +85,21 @@ if(isset($_GET['CoreVars'])){
 	$coreConfig['coreModule'] = $coreModule;
 
 	/* PROCURA O ARQUIVO CONFIG.PHP */
-	echo $coreModule;
+	//echo $coreModule;
 	$file = BASE.'\modules\\config.php';
 
 	if(file_exists($file)){
 		require_once($file);
 	}
-	header('Location: '.$coreConfig['default_module'].'/'.$coreConfig['default_controller']);
+	$location = 'Location: '.$coreConfig['default_module'].'/'.$coreConfig['default_controller'];
+	header($location);
+	die("<script>Console.Log('Redirecting to $location')</script>");
 }
 
 
 /* DEFINE THE  coreModule */
 $coreModule = 'default';
-if(@$CoreVars[0]!= 'default' && @$CoreVars[0] != null){
+if(isset($CoreVars) && @$CoreVars[0] != null){
 	$coreModule = @$CoreVars[0];
 }
 $coreConfig['coreModule'] = $coreModule;
@@ -94,13 +110,13 @@ $coreConfig['coreModule'] = $coreModule;
 
 
 /* PROCURA O ARQUIVO CONFIG.PHP */
-$file = BASE.'\modules\\'.$coreModule.'\\config.php';
+$file = BASE.'/modules/'.$coreModule.'/config.php';
 if(file_exists($file)){
 	require_once($file);
 }
 else
 {
-	require_once(BASE.'\modules\\config.php');
+	require_once(BASE.'/modules/config.php');
 }
 
 
@@ -157,11 +173,11 @@ include(CORE.'Core.php');
 
 
 
-$mod = implode('\\',$tmp);
-define('MODULEFOLDER', $mod.'\\modules\\'.$coreModule);
+$mod = implode('/',$tmp);
+define('MODULEFOLDER', $mod.'/modules/'.$coreModule);
 define('ATUALMODULE', $coreModule);
 
-define('DEFAULTFOLDER', $mod.'\\modules\\default/');
+define('DEFAULTFOLDER', $mod.'/modules/default/');
 
 
 //define('MODULEPUBLIC', MODULEFOLDER.'\\public\\');
@@ -186,13 +202,16 @@ $baseDir = substr($_SERVER['PHP_SELF'], 0, strlen($_SERVER['PHP_SELF'])-9);
 define('BASEDIR', $baseDir);
 
 //GERA O MODULE
+if(isset($_GET['CoreVars'])){
 $params = explode('/',$_GET['CoreVars']);
-if(isset($params)){
-	if(file_exists(BASEFOLDER.'modules\\'.$params[0])){
-		$coreModule = $CoreVars[0];
-	}else{
-		$coreModule = $coreConfig['default_controller'];
+	if($params){
+		if(file_exists(BASEFOLDER.'modules/'.$params[0])){
+			$coreModule = $CoreVars[0];
+		}else{
+			$coreModule = $coreConfig['default_controller'];
+		}	
 	}
+	
 }
 else
 	$coreModule = '';
@@ -202,7 +221,9 @@ else
 if(isset($params[1]) && $params[1] != null){
 	$coreController = $params[1];
 }else{
-	header('Location: '.BASEDIR.$coreModule.'/'.$coreConfig['default_controller']);
+	$location = 'Location: '.BASEDIR.$coreModule.'/'.$coreConfig['default_controller'];
+	header($location);
+	die("<script>Console.Log('Redirecting to $location')</script>");
 	$coreController = $coreConfig['default_controller'];
 }
 
@@ -220,6 +241,7 @@ if(isset($params[2])){
 
 if($coreModule == 'core' || $coreModule == 'modules'){
 	//header('Location: '.$coreConfig['default_module']);
+	//die("<script>Console.Log('Redirecting to $location')</script>");
 }
 
 /*  SISTEMA DE ROTEAMENTO */
@@ -268,7 +290,7 @@ if($params[0]){ // se algum controller for especificado
 
 
 				//Apache
-				define('ASSETS', BASEDIR.'modules\\'.$coreModule.'\\views\\assets\\');
+				define('ASSETS', BASEDIR.'modules/'.$coreModule.'/views/assets/');
 
 
 

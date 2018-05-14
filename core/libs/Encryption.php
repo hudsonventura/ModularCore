@@ -5,28 +5,33 @@ if (!defined('ROOT_ACCESS')) exit('<h2>ERROR 403 - FORBIDDEN</h2> You can\'t acc
 
 class Encryption extends Core{
 
+	private $cipher = 'BF-ECB';
 
 	function __construct(){
 		parent::__construct();
 	}
 
-	public function encrypt($string, $key = null){
-		if(!$key){
-			$key = core::$coreConfig['encryption_key'];
-		}
-		$encrypt = mcrypt_encrypt(MCRYPT_BLOWFISH, strrev($key), $string, MCRYPT_MODE_ECB);
-		$encrypt2 = mcrypt_encrypt(MCRYPT_BLOWFISH, strrev(MD5($key)), $encrypt, MCRYPT_MODE_ECB);
+	public function encrypt($string, $key = null, $algorithm = null){
+		if(!$key) $key = core::$coreConfig['encryption_key'];
+
+		if(!$algorithm) $algorithm = core::$coreConfig['encryption_algorithm'];
+
+
+		$encrypt = openssl_encrypt($string, $algorithm, strrev($key));
+		$encrypt2 = openssl_encrypt($encrypt, $algorithm,strrev(MD5($key)));
 		return base64_encode($encrypt2);
 	}
 
-	public function decrypt($string, $key = null){
-		if(!$key){
-			$key = core::$coreConfig['encryption_key'];
-		}
+	public function decrypt($string, $key = null, $algorithm = null){
+		
+		if(!$key) $key = core::$coreConfig['encryption_key'];
+		
+
+		if(!$algorithm) $algorithm = core::$coreConfig['encryption_algorithm'];
+		
+
 		$base64 = base64_decode($string);
-		$encrypt2 = mcrypt_decrypt(MCRYPT_BLOWFISH, strrev(MD5($key)), $base64, MCRYPT_MODE_ECB);
-		return mcrypt_decrypt(MCRYPT_BLOWFISH, strrev($key), $encrypt2, MCRYPT_MODE_ECB);
+		$encrypt2 = openssl_decrypt($base64, $algorithm, strrev(MD5($key)));
+		return openssl_decrypt($encrypt2, $algorithm, strrev($key));	
 	}
 }
-
-

@@ -27,12 +27,12 @@ abstract class Core {
 			$name = $lib;
 		}
 		//BUSCA BIBLIOTECAS NA PASTA CORE/LIBS
-		$libCore = CORE.'libs\\'.$lib.'.php';
+		$libCore = CORE.'libs/'.$lib.'.php';
 		if(file_exists($libCore)){
 			$class = 'ModularCore\\'.$lib;
 		}else{
 			//BUSCA BIBLIOTECAS NA PASTA MODULES/modulousuario/LIBS
-			$libCore = MODULEFOLDER.'\\libs\\'.$lib.'.php';
+			$libCore = MODULEFOLDER.'/libs/'.$lib.'.php';
 			if(file_exists($libCore)){
 				$class = $lib;
 			}else{
@@ -48,9 +48,9 @@ abstract class Core {
 		if(class_exists($class)){
 			$this->libs->$name = new $class;
 		}else{
-			//echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
+			echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
 
-			//die();
+			die();
 		}
 	}
 
@@ -79,9 +79,49 @@ abstract class Core {
 	}
 
 	public function removeSpecialChar($string){
-		$what = array( 'ä','ã','à','á','â','ê','ë','è','é','ï','ì','í','ö','õ','ò','ó','ô','ü','ù','ú','û','À','Á','É','Í','Ó','Ú','ñ','Ñ','ç','Ç',' ','-','(',')',',',';',':','|','!','"','#','$','%','&','/','=','?','~','^','>','<','ª','º' );
-		$by   = array( 'a','a','a','a','a','e','e','e','e','i','i','i','o','o','o','o','o','u','u','u','u','A','A','E','I','O','U','n','n','c','C',' ','_','_','_','_','_','_','_','_','_','_','$','%','_','_','_','_','_','_','_','_','_','_' );
+		$what = array( 'Ã¡','Ã ','Ã£','Ã¤','Ã¢','Ã©','Ã¨','Ã«','Ãª','Ã­','Ã¬','Ã¯','Ã³','Ã²','Ã´','Ã¶','Ãµ','Ãº','Ã¹','Ã»','Ã¼','Ã','Ã€','Ã‰','Ã','Ã“','Ãš','Ã±','Ã§','Ã‡','(',')',',',';',':','|','!','"','#','$','%','&','/','=','?','~','^','>','<','ï¿½','ï¿½' );
+		$by   = array( 'a','a','a','a','a','e','e','e','e','i','i','i','o','o','o','o','o','u','u','u','u','A','A','E','I','O','U','n','c','C',' ',' ',' ',' ',' ',' ',' ',' ','$','%',' ',' ',' ',' ',' ',' ','_','_','_','_' );
 		return str_replace($what, $by, $string);
+	}
+	
+	protected function loadModel($model, $name = null){
+
+		if($name == null){
+			$name = $model;
+		}
+
+		//BUSCA MODELS NA PASTA MODULES/modulousuario/MODELS
+		$modelCore = MODULEFOLDER.'/models/'.$model.'.php';
+		if(file_exists($modelCore)){
+			$class = $model;
+		}else{
+
+			//BUSCA MODELS NA PASTA MODULES/DEFAULT/MODELS
+			$modelCore = DEFAULTFOLDER.'models/'.$model.'.php';
+			if(file_exists($modelCore)){
+				$class = $model;
+			}else{
+				//include 'errors/402.php';
+				echo '<h2>ERROR 402 - LOST MODEL</h2> Fail when open the MODEL <b>'.$model.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
+				die();
+			}
+
+		}
+
+
+		require_once($modelCore);
+		if(class_exists($class)){
+			if(!isset($this->models)){
+				$this->models = new \stdClass();
+			}
+			
+			$this->models->$name = new $class($name);
+			$this->models->$name->vars($this);
+		}else{
+			//include 'errors/402.php';
+			echo '<h2>ERROR 403 - FORBIDDEN</h2> We can\'t found the class <b>'.$class.'</b> in the file <b>'.debug_backtrace()[0] ['file'].'</b> in the line <b>'.debug_backtrace()[0] ['line'].'</b>';
+			die();
+		}
 	}
 
 
