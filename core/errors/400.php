@@ -57,7 +57,7 @@ table tr.alt td,table tr.alt th{}
   <ul> 	<li>The library directory or file specified does not exist on the Web server.</li> 	<li>The URL contains a typographical error.</li> 	<li>A custom filter or module, such as URLScan, restricts access to the file.</li> </ul> 
  </fieldset> 
 </div> 
-<?php if($this->coreConfig['environment'] != 'PRD')
+<?php if(self::$coreConfig['environment'] != 'PRD')
 	echo '<fieldset><h4>Admin Information:</h4> 
   We can\'t load the lib <b>'.$lib.'</b> in the file <b>'.debug_backtrace()[1] ['file'].'</b> in the line <b>'.debug_backtrace()[1] ['line'].'</b><br /><br />
 	<h2><red>Attention</red></h2>

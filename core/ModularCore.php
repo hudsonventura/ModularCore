@@ -12,16 +12,19 @@ $coreConfig ['startTime'] = $coreStartTime;
 
 /*DEFINE AS CONSTANTES RAIS DO SISTEMA */
 define('CORE', __DIR__.'/');
-if(strpos($_SERVER['SERVER_SOFTWARE'], 'Ubuntu')){
+if(strpos(CORE, '\\') === false){
+	//server linux
 	$tmp = explode('/', __DIR__);
 	array_pop($tmp);
 	define('BASE', implode('/',$tmp));
 	define('BASEFOLDER', implode('/',$tmp).'/');
 }else{
+	//server windows
 	$tmp = explode('\\', __DIR__);
 	array_pop($tmp);
 	define('BASE', implode('\\',$tmp));
 	define('BASEFOLDER', implode('\\',$tmp).'\\');
+	
 }
 
 
@@ -82,7 +85,7 @@ if(isset($_GET['CoreVars'])){
 	$coreConfig['coreModule'] = $coreModule;
 
 	/* PROCURA O ARQUIVO CONFIG.PHP */
-	echo $coreModule;
+	//echo $coreModule;
 	$file = BASE.'\modules\\config.php';
 
 	if(file_exists($file)){
