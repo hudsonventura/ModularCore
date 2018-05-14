@@ -1,0 +1,7 @@
+
+*.log
+
+web.config
+cache_file
+.vs/*
+.vscode/*
