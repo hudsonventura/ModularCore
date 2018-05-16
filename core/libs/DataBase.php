@@ -24,7 +24,7 @@ class DataBase extends Core{
 		$this->vendor = core::$coreConfig['databases'][$this->db]['vendor'];
 		$this->sqlBuilder = new SQLBuilder($db);
 
-		$this->orm = new Orm();
+		$this->orm = new Orm(self::$conn);
 	}
 }
 
