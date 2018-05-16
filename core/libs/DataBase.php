@@ -6,7 +6,7 @@ if (!defined('ROOT_ACCESS')) exit('<h2>ERROR 403 - FORBIDDEN</h2> You can\'t acc
 
 class DataBase extends Core{
 
-	public $conn;
+	public static $conn;
 	private $db;
 	public $vendor;
 	public $sqlBuilder;
@@ -23,6 +23,26 @@ class DataBase extends Core{
 		}
 		$this->vendor = core::$coreConfig['databases'][$this->db]['vendor'];
 		$this->sqlBuilder = new SQLBuilder($db);
+		
+		//INSTANCE THE PDO OBJECT
+		try{
+			//CASE DB IS NOT AN ORACLE
+			if(core::$coreConfig['databases'][$db]['vendor'] <> 'oci'){
+				self::$conn = new \PDO(core::$coreConfig['databases'][$db]['vendor'].":dbname=".core::$coreConfig['databases'][$db]['dbname'].";host=".core::$coreConfig['databases'][$db]['host'], core::$coreConfig['databases'][$db]['user'], core::$coreConfig['databases'][$db]['pass']);
+			}
+
+			//CAS DB IS ORACLE
+			if(core::$coreConfig['databases'][$db]['vendor'] == 'oci'){
+				self::$conn = new \PDO("oci:dbname="." (DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP) (HOST = ".core::$coreConfig['databases'][$db]['host'].")(PORT = ".core::$coreConfig['databases'][$db]['port'].")))(CONNECT_DATA = (".core::$coreConfig['databases'][$this->db]['connectData']." = ".core::$coreConfig['databases'][$this->db]['connectValue'].") (TNS = ".core::$coreConfig['databases'][$this->db]['tns'].")))", core::$coreConfig['databases'][$this->db]['user'], core::$coreConfig['databases'][$this->db]['pass']);
+			}
+			self::$conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		} Catch(\PDOException $e){
+			$error = $e->getMessage();
+			if(debug_backtrace()[1] = 'ModularCore\SQLBuilder'){
+				include 'core/errors/401.php';
+			die();
+			}
+		}
 
 		$this->orm = new Orm(self::$conn);
 	}
