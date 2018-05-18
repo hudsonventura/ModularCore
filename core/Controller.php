@@ -108,11 +108,11 @@ abstract class Controller extends Core{
 
 	
 
-	protected function redirect($controller, $time = null){
-		if(substr($controller, 0, 4) == 'http'){
-			$location = "$controller";
+	protected function redirect($moduleControllerFunction, $time = null){
+		if(substr($moduleControllerFunction, 0, 4) == 'http'){
+			$location = "$moduleControllerFunction";
 		}else{
-			$location = BASEDIR.$this->core['module'].'/'.$controller;
+			$location = BASEDIR.$moduleControllerFunction;
 		}
 		//header($location);
 

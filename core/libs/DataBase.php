@@ -898,7 +898,7 @@ class Orm
 				switch ($addColumn['type']) {
 					case 'SERIAL':
 						$query .= 'SERIAL'.$addColumn['lenght'].' ';
-						$primaryKey = 'ADD PRIMARY KEY ('.$addColumn['lenght'].')  ';
+						$primaryKey = 'ADD PRIMARY KEY ('.$addColumn['name'].')  ';
 						break;
 
 					case 'VARCHAR':
@@ -958,11 +958,11 @@ class Orm
 
 			}
 		}
-		$query = substr($query, 0, strlen($query.$primaryKey)-2);
+		$query = substr($query.$primaryKey, 0, strlen($query.$primaryKey)-2);
 
 
 		
-		VAR_DUMP($primaryKey); DIE();
+		VAR_DUMP($primaryKey);
 
 		echo nl2br($query);
 
