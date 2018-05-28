@@ -315,10 +315,16 @@ if($params[0]){ // se algum controller for especificado
 					include ('errors/404.php');
 					die();
 				}
-
+				$get = $_GET;
+				unset($get['CoreVars']);
+				foreach ($get as $key => $value) {
+					if ($value == '') {
+						$get[$key] = null;
+					}
+				}
 
 				$controller = new $class();
-				$controller->$coreFunction(); //die();
+				$controller->$coreFunction($get); //die();
 			}
 	}
 

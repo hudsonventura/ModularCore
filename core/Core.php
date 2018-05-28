@@ -83,6 +83,14 @@ abstract class Core {
 		$by   = array( 'a','a','a','a','a','e','e','e','e','i','i','i','o','o','o','o','o','u','u','u','u','A','A','E','I','O','U','n','c','C',' ',' ',' ',' ',' ',' ',' ',' ','$','%',' ',' ',' ',' ',' ',' ','_','_','_','_' );
 		return str_replace($what, $by, $string);
 	}
+
+	function onlyAlphaNumeric($string){
+		$what = array(' ','-','(',')',',',';',':','|','!','"','#','$','%','&','/','=','?','~','^','>','<','ª','º','_','.');
+		$by   = array('','','','','','','','','','','','','','','','','','','','','','','','','');
+		return str_replace($what, $by, $this->removeSpecialChar($string));
+	}
+	
+
 	
 	protected function loadModel($model, $name = null){
 
@@ -127,3 +135,4 @@ abstract class Core {
 
 
 }
+
