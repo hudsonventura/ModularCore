@@ -130,6 +130,10 @@ abstract class Controller extends Core{
 
 		die("<meta http-equiv='refresh' content='$time'>");
 	}
+
+	protected function close(){
+		die("<script>window.close();</script>");
+	}
 }
 
 
