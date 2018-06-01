@@ -114,8 +114,8 @@ class ActiveDirectory extends Core{
 				if($return['count'] > 0){
 					for ($i=0; $i < $return['count']; $i++) { 
 						$return[$i]['domain'] = $activeDirectory['domain'];
-						array_push($all, $return);
 					}
+					array_push($all, $return);
 				}
 			}else{
 				//consoleWrite("Cant BIND to Active Directory!");
