@@ -1,5 +1,6 @@
 {
     "require": {
-        "symfony/var-dumper": "^4.0"
+        "symfony/var-dumper": "^4.0",
+        "fergusean/nusoap": "^0.9.5"
     }
 }

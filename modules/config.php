@@ -9,8 +9,8 @@ $coreConfig['console_show'] = true;
 
 
 //Configurações do roteamento
-$coreConfig['default_module'] = 'home';
-$coreConfig['default_controller'] = 'start';
+$coreConfig['default_module'] = 'acesso';
+$coreConfig['default_controller'] = 'login';
 $coreConfig['default_function'] = 'index';
 
 
@@ -23,18 +23,28 @@ $coreConfig['encryption_key'] = 'amaggi@2015';
 
 
 //Configuração dos bancos de dados
-$coreConfig['databases']['default_database'] = 'postgres';
+$coreConfig['databases']['default_database'] = 'dev';
 
-//PRD PRODUCAO
-$cscPRD = array();
-$cscPRD['vendor'] = 'pgsql';
-$cscPRD['host'] = '172.12.12.59';
-$cscPRD['schema'] = 'public';
-$cscPRD['dbname'] = 'noname'; //OU OWNER/ DONO
-$cscPRD['port'] = '5432';
-$cscPRD['user'] = 'csc';
-$cscPRD['pass'] = 'csc@2015';
-$coreConfig['databases']['cscPRD'] = $cscPRD;
+
+$dev = array();
+$dev['vendor'] = 'pgsql';
+$dev['host'] = 'hudsonventura.no-ip.org';
+$dev['schema'] = 'public';
+$dev['dbname'] = 'DentalClin'; //OU OWNER/ DONO
+$dev['port'] = '5432';
+$dev['user'] = 'fatosistemas';
+$dev['pass'] = '#fatosistemas@2018#';
+$coreConfig['databases']['dev'] = $dev;
+
+$prd = array();
+$prd['vendor'] = 'pgsql';
+$prd['host'] = '40.114.74.171';
+$prd['schema'] = 'public';
+$prd['dbname'] = 'DentalClin'; //OU OWNER/ DONO
+$prd['port'] = '5432';
+$prd['user'] = 'fatosistemas';
+$prd['pass'] = '#fatosistemas@2018#';
+$coreConfig['databases']['prd'] = $dev;
 
 
 
@@ -54,8 +64,8 @@ $coreConfig['ActiveDirectory']['Maggi Corp']['admin_pass'] = 'w42@$809';
 
 
 //SESSION
-$coreConfig['session_name'] = 'MVCore-Session';
-$coreConfig['session_expire_time'] = '60'; // in minutes
+$coreConfig['session_name'] = 'modularcore.com';
+$coreConfig['session_expire_time'] = '120'; // in minutes
 
 
 

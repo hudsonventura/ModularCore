@@ -4,8 +4,45 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8bdf68c1c113c39cd20070190516c49",
+    "content-hash": "ea93019c95a994cf0309d9c64b8f5e9b",
     "packages": [
+        {
+            "name": "fergusean/nusoap",
+            "version": "0.9.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fergusean/nusoap.git",
+                "reference": "463c772ae805aed7f396d89e6dce1dc0ce4c038b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fergusean/nusoap/zipball/463c772ae805aed7f396d89e6dce1dc0ce4c038b",
+                "reference": "463c772ae805aed7f396d89e6dce1dc0ce4c038b",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPLv2"
+            ],
+            "authors": [
+                {
+                    "name": "Dietrich Ayala",
+                    "homepage": "http://sourceforge.net/u/dietricha/profile/"
+                },
+                {
+                    "name": "Scott Nichol",
+                    "homepage": "http://sourceforge.net/u/snichol/profile/"
+                }
+            ],
+            "description": "NuSOAP re-packaged for Packagist/Composer",
+            "time": "2014-05-19T03:44:33+00:00"
+        },
         {
             "name": "symfony/polyfill-mbstring",
             "version": "v1.8.0",
