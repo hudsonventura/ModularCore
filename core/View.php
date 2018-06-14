@@ -7,28 +7,45 @@ class View extends Core{
 	private $viewVars;
 	private $file;
 
-	function __construct($file, $coreView) {
+	function __construct($file, $coreView, $twig = null) {
 		parent::__construct();
 		$this->file = $file;
 		$this->viewVars = $coreView;
+		$this->twig = $twig;
 	}
 
 
 	public function show(&$controller){
-
-		if(count($this->viewVars)>0){
-			foreach($this->viewVars as $key => $value){
-				$$key = $value;
+		if (!$this->twig) { //will works without twig
+			if(count($this->viewVars)>0){
+				foreach($this->viewVars as $key => $value){
+					$$key = $value;
+				}
 			}
+	
+			unset($GLOBALS['controller']);
+			unset($GLOBALS['model']);
+			$this->viewVars = array();
+	
+	
+			$viewVars = $this->viewVars;
+			include $this->file;
+		}else{ //works with twig
+			$twigVars = array();
+			if(count($this->viewVars)>0){
+				foreach($this->viewVars as $key => $value){
+					$$key = $value;
+					$twigVars[$key] = $value;
+				}
+			}
+			unset($GLOBALS['controller']);
+			unset($GLOBALS['model']);
+			$twigVars['GLOBALS'] = $GLOBALS;
+			echo $this->twig->render($this->file, $twigVars);
+	
 		}
 
-		unset($GLOBALS['controller']);
-		unset($GLOBALS['model']);
-		$this->viewVars = array();
-
-
-		$viewVars = $this->viewVars;
-		include $this->file;
+		
 	}
 
 	public function get(&$controller){

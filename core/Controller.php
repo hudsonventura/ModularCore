@@ -19,7 +19,13 @@ abstract class Controller extends Core{
 			die();
 		}
 
-
+		if (isset($this->twigOptions)) { //declaration that the dev will work this twig
+			require_once BASEFOLDER.'core/vendor/autoload.php';
+			$this->twigLoader = new \Twig_Loader_Filesystem(array(DEFAULTFOLDER.'views/', MODULEFOLDER .'/views/'));
+			$this->twig = new \Twig_Environment($this->twigLoader, $this->twigOptions);
+			$this->twig->addExtension(new \Twig_Extension_Debug());
+		}
+		
 
 		parent::__construct();
 
@@ -55,7 +61,9 @@ abstract class Controller extends Core{
 
 
 	public function loadView($string){
+
 		$file = BASE.'/modules/'.$this->core['module'].'/views/'.$string.'.php';
+		$fileTwig = $string.'.html';
 		if(!file_exists($file)){
 			$file = BASE.'/modules/default/views/'.$string.'.php';
 		}
@@ -71,11 +79,26 @@ abstract class Controller extends Core{
 			$view->show($this);
 			echo core::$console;
 
-			return true;
-		}else{
+			die();
+		}
+
+		try{
+			//LIMPA TODO O CONTEUDO DA TELA DO USUARIO ANTES DE CARREGAR A VIEW.
+			if(core::$coreConfig['environment'] == 'PRD'){
+				ob_clean();
+			}
+
+			$view = new View($fileTwig, $this->coreView, $this->twig);
+			$this->coreView = array(); //limpa o array coreView, pois ele estará disponivel na view como $this->viewVars
+			$view->show($this);
+			echo core::$console;
+
+			die();
+		}catch(Exception $e){
 			echo '<h2>ERROR 404 - LOST VIEW</h2> Fail when open the VIEW <b>'.$string.'</b> in the file <b>'.debug_backtrace()[0] ["file"].'</b> in the line <b>'.debug_backtrace()[0] ["line"].'</b>';
 			die();
 		}
+
 	}
 
 	public function getView($string){
@@ -108,11 +131,11 @@ abstract class Controller extends Core{
 
 	
 
-	protected function redirect($moduleControllerFunction, $time = null){
-		if(substr($moduleControllerFunction, 0, 4) == 'http'){
-			$location = "$moduleControllerFunction";
+	protected function redirect($location, $time = null){
+		if(substr($location, 0, 4) == 'http'){
+			$location = "$location";
 		}else{
-			$location = BASEDIR.$moduleControllerFunction;
+			$location = BASEDIR.$location;
 		}
 		//header($location);
 

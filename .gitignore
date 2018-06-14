@@ -1,7 +1,7 @@
-
 *.log
-modules/
 web.config
 cache_file
 .vs/*
 .vscode/*
+modules3/
+modules/
