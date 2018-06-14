@@ -198,20 +198,20 @@ class ActiveDirectory extends Core{
 
     		$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
 		    if($bd){
-			$filter="(&(objectCategory=user)(objectCategory=person)($string))";
-			$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+				$filter="(&(objectCategory=user)(objectCategory=person)($string))";
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
 
-			$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
-			$info = ldap_get_entries($activeDirectory['ad'], $search);
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+				$info = ldap_get_entries($activeDirectory['ad'], $search);
 
-			$return= ldap_get_entries($activeDirectory['ad'],$search);
-			if($return['count'] > 0){
-			    $return[0]['domain'] = $activeDirectory['domain'];
-			    return $return[0]; //RETURN THE FIRST ONE
-			}
+				$return= ldap_get_entries($activeDirectory['ad'],$search);
+				if($return['count'] > 0){
+					$return[0]['domain'] = $activeDirectory['domain'];
+					return $return[0]; //RETURN THE FIRST ONE
+				}
 		    }else{
-			//consoleWrite("Cant BIND to Active Directory!");
-			return false;
+				//consoleWrite("Cant BIND to Active Directory!");
+				return false;
 		    }
     	}
 
