@@ -7,6 +7,8 @@ $coreConfig['timezone'] = 'America/Cuiaba';
 $coreConfig['environment'] = 'DEV'; //MUST BE 'PRD' TO HIDE ERRORS. To other values, the errors will be show. 
 $coreConfig['console_show'] = true;
 
+$coreConfig['console_show'] = true;
+
 
 //Configurações do roteamento
 $coreConfig['default_module'] = 'acesso';
@@ -44,7 +46,7 @@ $prd['dbname'] = 'DentalClin'; //OU OWNER/ DONO
 $prd['port'] = '5432';
 $prd['user'] = 'fatosistemas';
 $prd['pass'] = '#fatosistemas@2018#';
-$coreConfig['databases']['prd'] = $dev;
+$coreConfig['databases']['prd'] = $prd;
 
 
 
