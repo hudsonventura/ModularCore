@@ -87,7 +87,7 @@ abstract class Core {
 	function onlyAlphaNumeric($string){
 		$what = array(' ','-','(',')',',',';',':','|','!','"','#','$','%','&','/','=','?','~','^','>','<','ª','º','_','.');
 		$by   = array('','','','','','','','','','','','','','','','','','','','','','','','','');
-		return str_replace($what, $by, $this->removeSpecialChar($string));
+		return trim(str_replace($what, $by, $this->removeSpecialChar($string)));
 	}
 	
 

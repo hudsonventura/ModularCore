@@ -19,7 +19,9 @@ abstract class Controller extends Core{
 			die();
 		}
 
-		if (isset($this->twigOptions)) { //declaration that the dev will work this twig
+		
+		if (isset($GLOBALS['twigOptions'])) { //declaration that the dev will work this twig
+			$this->twigOptions = $GLOBALS['twigOptions'];
 			require_once BASEFOLDER.'core/vendor/autoload.php';
 			$this->twigLoader = new \Twig_Loader_Filesystem(array(DEFAULTFOLDER.'views/', MODULEFOLDER .'/views/'));
 			$this->twig = new \Twig_Environment($this->twigLoader, $this->twigOptions);
