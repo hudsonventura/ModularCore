@@ -4,8 +4,50 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea93019c95a994cf0309d9c64b8f5e9b",
+    "content-hash": "892b4b0a3090902e4d298c2e7ada8c7f",
     "packages": [
+        {
+            "name": "components/jquery",
+            "version": "3.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/components/jquery.git",
+                "reference": "459648cda77875519c5da3ae1dd0ed5d170aa649"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/components/jquery/zipball/459648cda77875519c5da3ae1dd0ed5d170aa649",
+                "reference": "459648cda77875519c5da3ae1dd0ed5d170aa649",
+                "shasum": ""
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "scripts": [
+                        "jquery.js"
+                    ],
+                    "files": [
+                        "jquery.min.js",
+                        "jquery.min.map",
+                        "jquery.slim.js",
+                        "jquery.slim.min.js",
+                        "jquery.slim.min.map"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "JS Foundation and other contributors"
+                }
+            ],
+            "description": "jQuery JavaScript Library",
+            "homepage": "http://jquery.com",
+            "time": "2018-03-04T13:23:48+00:00"
+        },
         {
             "name": "fergusean/nusoap",
             "version": "0.9.5",
@@ -42,6 +84,37 @@
             ],
             "description": "NuSOAP re-packaged for Packagist/Composer",
             "time": "2014-05-19T03:44:33+00:00"
+        },
+        {
+            "name": "itsjavi/bootstrap-colorpicker",
+            "version": "2.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/farbelous/bootstrap-colorpicker.git",
+                "reference": "d56d0d3d5bee59904d48bce3c47a0029741e10e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/farbelous/bootstrap-colorpicker/zipball/d56d0d3d5bee59904d48bce3c47a0029741e10e6",
+                "reference": "d56d0d3d5bee59904d48bce3c47a0029741e10e6",
+                "shasum": ""
+            },
+            "require": {
+                "components/jquery": ">=1.10"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache License Version 2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Javier Aguilar",
+                    "homepage": "https://itsjavi.com"
+                }
+            ],
+            "description": "Fancy and customizable colorpicker plugin for Twitter Bootstrap",
+            "time": "2018-03-29T04:47:33+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
