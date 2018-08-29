@@ -4,6 +4,10 @@ namespace ModularCore;
 
 if (!defined('ROOT_ACCESS')) exit('<h2>ERROR 403 - FORBIDDEN</h2> You can\'t access this page');
 
+/*Starts the meter of BENCHMARK LIB*/
+$coreStartTime = microtime(true);
+
+
 /* Array config */
 $coreConfig = array();
 $coreConfig ['startTime'] = $coreStartTime;
@@ -331,6 +335,5 @@ if($params[0]){ // se algum controller for especificado
 	/*WRITE THE TIME PROCESS OF PAGE TO CONSOLE */
 	//$coreBenchstart = microtime() - $coreBenchstart;
 	//$console = $console.'<br /><br /><br />------------<br />Generated page in '.number_format($coreBenchstart, 2).'s'.'<br />------------<br />';
-
 
 }
