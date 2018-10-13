@@ -1,7 +1,0 @@
-{
-    "require": {
-        "symfony/var-dumper": "^4.0",
-        "fergusean/nusoap": "^0.9.5",
-        "itsjavi/bootstrap-colorpicker": "^2.5"
-    }
-}

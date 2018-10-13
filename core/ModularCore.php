@@ -4,6 +4,10 @@ namespace ModularCore;
 
 if (!defined('ROOT_ACCESS')) exit('<h2>ERROR 403 - FORBIDDEN</h2> You can\'t access this page');
 
+/*Starts the meter of BENCHMARK LIB*/
+$coreStartTime = microtime(true);
+
+
 /* Array config */
 $coreConfig = array();
 $coreConfig ['startTime'] = $coreStartTime;
@@ -137,10 +141,19 @@ $PUBLICDEFAULTDIR = '/'.implode('/', $dir).'/modules/default/views/';
 /*Corrige caso o sistema esteja no diretorio raiz*/
 if(substr($PUBLICDEFAULTDIR, 0, 2) == '//'){
 	$PUBLICDEFAULTDIR = substr($PUBLICDEFAULTDIR, 1);
-	define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
-}else{
-	define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
 }
+
+if ($_SERVER['HTTP_HOST'] == 'on') {
+	$PUBLICDEFAULTDIR = 'https://'.$_SERVER['HTTP_HOST'].$PUBLICDEFAULTDIR;
+}else{
+	$PUBLICDEFAULTDIR = 'https://'.$_SERVER['HTTP_HOST'].$PUBLICDEFAULTDIR;
+}
+
+define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
+
+
+
+
 /*Corrige caso o sistema esteja no diretorio raiz*/
 array_pop($dir);array_pop($dir);
 //define('PUBLICMODULEDIR', implode('/', $dir).'/'.$coreModule.'/public/');
@@ -331,6 +344,5 @@ if($params[0]){ // se algum controller for especificado
 	/*WRITE THE TIME PROCESS OF PAGE TO CONSOLE */
 	//$coreBenchstart = microtime() - $coreBenchstart;
 	//$console = $console.'<br /><br /><br />------------<br />Generated page in '.number_format($coreBenchstart, 2).'s'.'<br />------------<br />';
-
 
 }

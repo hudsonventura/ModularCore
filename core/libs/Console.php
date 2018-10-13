@@ -10,58 +10,62 @@ class Console extends Core{
     }
 
     public function write($string){
+		
 		if(core::$coreConfig['console_show'] === true){
-			core::$console .= "<script>";
+			$log = '';
+			$logArray = '';
 			if($string <> ''){
 
 				if(!is_array($string) && !is_object($string)){
-					core::$console .= "console.log('$string');";
+					$log .= $string;
 				}else{
+
 					if(is_array($string)){
-						$this->writePart('Array Begin --- \\n');
-						$this->recursiveArray($string);
-						$this->writePart('Array End --- \\n \\n');
+						$log .= 'Array';
+						$logArray .= '\\nArray Begin --- \\n';
+						$logArray .= $this->recursiveArray($string);
+						$logArray .= '\\n\\nArray End --- \\n \\n';
 					}
+					
 					if(is_object($string)){
-						core::$console .= 'console.log("';
-						print_r($string); //TODO: echo de um objeto
-						core::$console .= '");';
+						$log .= 'Object';
+						$logArray .= '\\nObject Begin --- \\n';
+						$logArray .= 'This is not compatible with objects yet.'; //TODO: Do console be compatible with objects
+						$logArray .= '\\n\\nObject End --- \\n \\n';
 					}
 
 				}
 			}else{
-				core::$console .= "console.log('null');";
+				$log .= "null";
 			}
-			core::$console .= "console.log('ModularCore Console >> ".str_replace('\\', '\\\\', debug_backtrace()[0] ["file"])." at line ".debug_backtrace()[0] ["line"]."\\n\\n');</script>";
+			echo "<script>console.log('Console.log: --##> $log <##-- $logArray ".str_replace('\\', '\\\\', debug_backtrace()[0] ["file"])." at line ".debug_backtrace()[0] ["line"]."\\n\\n');</script>";
+			
 		}
+		
 
 	}
 
 	private function recursiveArray($array){
 
+		$return = '';
+		
+
 		foreach($array as $key => $item){
+			$return .= $key.' => ';
 			if(is_array($item)){
-				$this->writePart('\\t'.$key.' => ');
-				$this->recursiveArray($item);
+					$return .= 'Array\n\\t'.$this->recursiveArray($item);
 			}else{
-				if(is_string($item) || is_numeric($item)){
-					$string = str_replace(" ","_",preg_replace("/&([a-z])[a-z]+;/i", "$1", htmlentities(trim($item))));
-					$this->writePart($string);
-				}else{
-					$this->writePart('strange value');
-				}
+				//if(is_string($item) || is_numeric($item)){
+					$return .= $item.'\n';
+				//}else{
+				//	return $return.'strange value';
+				//}
 			}
 		}
-		$this->writePart('\\n');
+		return $return;
 	}
 
 
-	 private function writePart($string){
-		if($string <> ''){
-			core::$console .= "console.log('$string');";
-		}else{
-			core::$console .= "console.log('null');";
-		}
-	}
+
 
 }

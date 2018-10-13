@@ -363,6 +363,19 @@ class Orm
 		return $this->query;
 	}
 
+	public function beginTransaction(){
+		return  $this->conn->beginTransaction();
+	}
+
+	public function commit(){
+		return  $this->conn->commit();
+	}
+
+	public function setQuery($query){
+		$this->query = $query;
+		return $this;
+	}
+
 	public function __construct(&$dbConnection){
 		
 		if (!is_a ($dbConnection, 'PDO')) {
