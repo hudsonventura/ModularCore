@@ -79,7 +79,7 @@ if(isset($_GET['CoreVars'])){
 
 }else{
 	/* DEFINE THE  coreModule */
-	require_once(BASE.'/modules/config.php');
+	require_once(BASE.'/modules/config.php'); //TODO: criar uma excessão caso o arquivo de configuração nao esteja acessivel
 	$coreModule = $coreConfig['default_controller'];
 	if(isset($CoreVars) && $CoreVars[0] != null)
 		$coreModule = @$CoreVars[0];
