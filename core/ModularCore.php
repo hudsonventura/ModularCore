@@ -144,12 +144,16 @@ if(substr($PUBLICDEFAULTDIR, 0, 2) == '//'){
 }
 
 if ($_SERVER['HTTPS'] == 'on') {
-	$PUBLICDEFAULTDIR = 'https://'.$_SERVER['HTTP_HOST'].$PUBLICDEFAULTDIR;
+	
 }else{
-	$PUBLICDEFAULTDIR = 'http://'.$_SERVER['HTTP_HOST'].$PUBLICDEFAULTDIR;
+	
 }
 
+$baseSystemAddress = ($_SERVER['HTTPS'] == 'on') ? 'https://'.$_SERVER['HTTP_HOST'] : 'http://'.$_SERVER['HTTP_HOST'] ;
+
+$PUBLICDEFAULTDIR = $baseSystemAddress.$PUBLICDEFAULTDIR;
 define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
+define('BASESYSTEMADDRESS', $baseSystemAddress);
 
 
 
