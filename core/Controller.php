@@ -44,8 +44,8 @@ abstract class Controller extends Core{
 		$coreLinks = array();
 		$coreLinks['base'] = 		BASEDIR;
 		$coreLinks['module'] = 		BASESYSTEMADDRESS.$coreLinks['base'].$core['module'];
-		$coreLinks['controller'] = 	BASESYSTEMADDRESS.$coreLinks['module'].'/'.ATUALCONTROLLER;
-		$coreLinks['function'] = 	BASESYSTEMADDRESS.$coreLinks['controller'].'/'.ATUALFUNCTION;
+		$coreLinks['controller'] = 	$coreLinks['module'].'/'.ATUALCONTROLLER;
+		$coreLinks['function'] = 	$coreLinks['controller'].'/'.ATUALFUNCTION;
 
 		$this->coreView['links'] = $coreLinks;
 
