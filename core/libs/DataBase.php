@@ -28,7 +28,7 @@ class DataBase extends Core{
 		try{
 			//CASE DB IS NOT AN ORACLE
 			if(core::$coreConfig['databases'][$db]['vendor'] <> 'oci'){
-				self::$conn = new \PDO(core::$coreConfig['databases'][$db]['vendor'].":dbname=".core::$coreConfig['databases'][$db]['dbname'].";host=".core::$coreConfig['databases'][$db]['host'], core::$coreConfig['databases'][$db]['user'], core::$coreConfig['databases'][$db]['pass']);
+				self::$conn = new \PDO(core::$coreConfig['databases'][$db]['vendor'].":dbname=".core::$coreConfig['databases'][$db]['dbname'].";host=".core::$coreConfig['databases'][$db]['host'].";port=".core::$coreConfig['databases'][$db]['port'], core::$coreConfig['databases'][$db]['user'], core::$coreConfig['databases'][$db]['pass']);
 			}
 
 			//CAS DB IS ORACLE
