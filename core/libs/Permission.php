@@ -16,11 +16,14 @@ class Permission extends Core{
 
 		$access = $this->recursive($permissions);
 
-		if(!$access){
-			//if(!$this->required){
+		if($access){
+			return true;
+		}else{
+			/*if(!$this->required){
 				echo '<h1>ACCESS DENIED!</h1></br>Acesso negado!';
 				die();
-			//}
+			}*/
+			return false;
 		}
 
 
