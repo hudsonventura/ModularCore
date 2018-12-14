@@ -135,12 +135,14 @@ $dir = explode('/', $_SERVER['PHP_SELF']);
 array_pop($dir);
 array_shift($dir);
 $PUBLICDEFAULTDIR = '/'.implode('/', $dir).'/modules/default/views/';
+$PUBLICDIR = '/'.implode('/', $dir)."/modules/$coreModule/views/";
 
 
 
 /*Corrige caso o sistema esteja no diretorio raiz*/
 if(substr($PUBLICDEFAULTDIR, 0, 2) == '//'){
 	$PUBLICDEFAULTDIR = substr($PUBLICDEFAULTDIR, 1);
+	$PUBLICDIR = substr($PUBLICDIR, 1);
 }
 
 
@@ -148,6 +150,7 @@ if(substr($PUBLICDEFAULTDIR, 0, 2) == '//'){
 $baseSystemAddress = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://'.$_SERVER['HTTP_HOST'] : 'http://'.$_SERVER['HTTP_HOST'] ;
 
 $PUBLICDEFAULTDIR = $baseSystemAddress.$PUBLICDEFAULTDIR;
+$PUBLICDIR = $baseSystemAddress.$PUBLICDIR;
 define('DEFAULTVIEWDIR', $PUBLICDEFAULTDIR);
 define('BASESYSTEMADDRESS', $baseSystemAddress);
 
