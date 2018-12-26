@@ -350,7 +350,7 @@ class ActiveDirectory extends Core{
     public function unblockUser($user, $domain, $requireNewPassword = null){
 		$activeDirectory = $this->getDomain($domain);
 		$ad = $activeDirectory['ad'];
-		if($user['useraccountcontrol'][0] == 512 || $user['useraccountcontrol'][0] == 544 || $user['useraccountcontrol'][0] == 66048){
+		if($user['useraccountcontrol'][0] == 512 || $user['useraccountcontrol'][0] == 544 || $user['useraccountcontrol'][0] == 66048 || $user['useraccountcontrol'][0] == 66080){
 	 		try{
 				if($requireNewPassword)
 					$userdata["pwdlastset"][0] = 0;
@@ -359,7 +359,12 @@ class ActiveDirectory extends Core{
 				$userdata["lockoutTime"][0]=0;
 				$userdata["accountexpires"][0]='9223372036854775807';
 
-				$return = ldap_modify($ad, $user['dn'], $userdata);
+				if(is_array($user['dn']) == 1){
+					$return = ldap_modify($ad, $user['dn'][0], $userdata);
+					var_dump($user['dn']); die();
+				}else{
+					$return = ldap_modify($ad, $user['dn'], $userdata);
+				}
 
 				$user2 = $this->getUser('samaccountname='.$user['samaccountname'][0]);
 				if(ldap_errno($ad) || $user2['useraccountcontrol'][0] <> 512){
