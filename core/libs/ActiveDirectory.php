@@ -59,8 +59,6 @@ class ActiveDirectory extends Core{
 			$bd = @ldap_bind($activeDirectory['ad'], $login.'@'.$activeDirectory['domain'], $pass);
 			if($bd){
 				return true;
-			}else{
-				return false;
 			}
 		}
 		return false;
@@ -83,7 +81,10 @@ class ActiveDirectory extends Core{
 				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
 				$return= ldap_get_entries($activeDirectory['ad'],$search);
 				if($return['count'] > 0){
-					$return[0]['domain'] = $activeDirectory['domain'];
+					foreach ($return as $key => $item) {
+						$return[$key]['domain'] = $activeDirectory['domain'];
+					}
+					
 					array_push($all, $return);
 				}
 			}else{
@@ -172,6 +173,7 @@ class ActiveDirectory extends Core{
 
 			$return= ldap_get_entries($activeDirectory['ad'],$search);
 			if($return['count'] > 0){
+				
 				array_push($all, $return);
 				//var_dump($all);
 				return $all;
@@ -184,9 +186,9 @@ class ActiveDirectory extends Core{
 		return false;
     }
 
-    public function getUser($string, $domain = null){
+    public function getUser($string, $domain = 'all'){
 
-    	if(isset($domain) && $domain<> 'all'){
+    	if($domain<> 'all'){
     		//$activeDirectory = null;
     		if(isset($this->activeDirectory[$domain]))
     			$activeDirectory = $this->activeDirectory[$domain];
@@ -215,28 +217,32 @@ class ActiveDirectory extends Core{
 		    }
     	}
 
-
-		foreach($this->activeDirectory as $activeDirectory){
-		    // Bind to the directory server.
-		    $bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
-		    if($bd){
-			$filter="(&(objectCategory=user)(objectCategory=person)($string))";
-			$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
-
-			$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
-			$info = ldap_get_entries($activeDirectory['ad'], $search);
-
-			$return= ldap_get_entries($activeDirectory['ad'],$search);
-			if($return['count'] > 0){
-			    $return[0]['domain'] = $activeDirectory['domain'];
-				$return = $return[0];
-			    return $return; //RETURN THE FIRST ONE
+		if($domain == 'all'){
+			$returnList = [];
+			foreach($this->activeDirectory as $activeDirectory){
+				// Bind to the directory server.
+				$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+				if($bd){
+				$filter="(&(objectCategory=user)(objectCategory=person)($string))";
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+	
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+				$info = ldap_get_entries($activeDirectory['ad'], $search);
+	
+				$return= ldap_get_entries($activeDirectory['ad'],$search);
+				if($return['count'] > 0){
+					$return[0]['domain'] = $activeDirectory['domain'];
+					$return = $return[0];
+					$returnList[$activeDirectory['domain']] = $return; //RETURN THE FIRST ONE
+				}
+				}else{
+					//consoleWrite("Cant BIND to Active Directory!");
+					$returnList[$activeDirectory['domain']] =  false;
+				}
 			}
-		    }else{
-				//consoleWrite("Cant BIND to Active Directory!");
-			return false;
-		    }
+			return $returnList;
 		}
+		
     }
 
     public function listUsersofaGroup($group){
@@ -347,10 +353,10 @@ class ActiveDirectory extends Core{
 
 
 
-    public function unblockUser($user, $domain, $requireNewPassword = null){
+    public function unblockUser($user, $domain, $requireNewPassword = false){
 		$activeDirectory = $this->getDomain($domain);
 		$ad = $activeDirectory['ad'];
-		if($user['useraccountcontrol'][0] == 512 || $user['useraccountcontrol'][0] == 544 || $user['useraccountcontrol'][0] == 66048){
+		if($user['useraccountcontrol'][0] == 512 || $user['useraccountcontrol'][0] == 544 || $user['useraccountcontrol'][0] == 66048 || $user['useraccountcontrol'][0] == 66080){
 	 		try{
 				if($requireNewPassword)
 					$userdata["pwdlastset"][0] = 0;
@@ -359,9 +365,15 @@ class ActiveDirectory extends Core{
 				$userdata["lockoutTime"][0]=0;
 				$userdata["accountexpires"][0]='9223372036854775807';
 
-				$return = ldap_modify($ad, $user['dn'], $userdata);
+				if(is_array($user['dn']) == 1){
+					$return = ldap_modify($ad, $user['dn'][0], $userdata);
+				}else{
+					$return = ldap_modify($ad, $user['dn'], $userdata);
+				}
 
-				$user2 = $this->getUser('samaccountname='.$user['samaccountname'][0]);
+				$user2 = $this->getUser('samaccountname='.$user['samaccountname'][0], $domain);
+
+
 				if(ldap_errno($ad) || $user2['useraccountcontrol'][0] <> 512){
 	 				return false;
 	 			}
@@ -488,6 +500,39 @@ class ActiveDirectory extends Core{
 												}
 
 
+	}
+
+	//reset pass
+	public function resetPasswordAD($userDN, $userPassword, $domain, $mustChangePass = false){
+		
+		$activeDirectory = $this->activeDirectory[$domain];
+
+	
+		$return = array();
+		try{
+			$ADSI = new \COM("LDAP:");
+			$dnConnect = "LDAP://".$activeDirectory['host']."/".$userDN;
+			$dsObject = $ADSI->OpenDSObject($dnConnect, $activeDirectory['admin_user'], $activeDirectory['admin_pass'], 1);
+			$dsObject->AccountDisabled = false;
+			$dsObject->SetPassword($userPassword);
+			$dsObject->SetInfo();
+
+
+			//require to change pass $mustChangePass
+			/*$ad = $activeDirectory['ad'];
+			if($mustChangePass){
+				$userdata["pwdlastset"][0] = 0;
+				$return = ldap_modify($ad, $userDN, $userdata);
+			}*/
+
+
+
+	
+			return true;
+		}catch (Exception $e){
+			$this->lastError = $e->getMessage();
+			return false;
+		}
 	}
 
 
