@@ -212,6 +212,8 @@ if($coreConfig['environment'] == 'PRD'){
 }else{
 	error_reporting(E_ALL);
 }
+/** CONFIG ERROR LOG LOCATION */
+ini_set('error_log', $coreConfig['log_location']);
 
 
 $baseDir = substr($_SERVER['PHP_SELF'], 0, strlen($_SERVER['PHP_SELF'])-9);
