@@ -173,7 +173,9 @@ class ActiveDirectory extends Core{
 
 			$return= ldap_get_entries($activeDirectory['ad'],$search);
 			if($return['count'] > 0){
-				
+				foreach ($return as $key => $item) {
+					$return[$key]['domain'] = $activeDirectory['domain'];
+				}
 				array_push($all, $return);
 				//var_dump($all);
 				return $all;
