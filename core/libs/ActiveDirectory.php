@@ -188,9 +188,37 @@ class ActiveDirectory extends Core{
 		return false;
     }
 
+    public function getUsersFromAllDomains($string){
+
+			$returnList = [];
+			foreach($this->activeDirectory as $activeDirectory){
+				// Bind to the directory server.
+				$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+				if($bd){
+				$filter="(&(objectCategory=user)(objectCategory=person)($string))";
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+	
+				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+				$info = ldap_get_entries($activeDirectory['ad'], $search);
+	
+				$return= ldap_get_entries($activeDirectory['ad'],$search);
+				if($return['count'] > 0){
+					$return[0]['domain'] = $activeDirectory['domain'];
+					$return = $return[0];
+					$returnList[$activeDirectory['domain']] = $return; //RETURN THE FIRST ONE
+				}
+				}else{
+					//consoleWrite("Cant BIND to Active Directory!");
+					$returnList[$activeDirectory['domain']] =  false;
+				}
+			}
+			return $returnList;
+
+	}
+	
     public function getUser($string, $domain = 'all'){
 
-    	if($domain<> 'all'){
+    	if(isset($domain) && $domain<> 'all'){
     		//$activeDirectory = null;
     		if(isset($this->activeDirectory[$domain]))
     			$activeDirectory = $this->activeDirectory[$domain];
@@ -219,32 +247,28 @@ class ActiveDirectory extends Core{
 		    }
     	}
 
-		if($domain == 'all'){
-			$returnList = [];
-			foreach($this->activeDirectory as $activeDirectory){
-				// Bind to the directory server.
-				$bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
-				if($bd){
-				$filter="(&(objectCategory=user)(objectCategory=person)($string))";
-				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
-	
-				$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
-				$info = ldap_get_entries($activeDirectory['ad'], $search);
-	
-				$return= ldap_get_entries($activeDirectory['ad'],$search);
-				if($return['count'] > 0){
-					$return[0]['domain'] = $activeDirectory['domain'];
-					$return = $return[0];
-					$returnList[$activeDirectory['domain']] = $return; //RETURN THE FIRST ONE
-				}
-				}else{
-					//consoleWrite("Cant BIND to Active Directory!");
-					$returnList[$activeDirectory['domain']] =  false;
-				}
+
+		foreach($this->activeDirectory as $activeDirectory){
+		    // Bind to the directory server.
+		    $bd = ldap_bind($activeDirectory['ad'], $activeDirectory['admin_user']."@".$activeDirectory['domain'], $activeDirectory['admin_pass']);
+		    if($bd){
+			$filter="(&(objectCategory=user)(objectCategory=person)($string))";
+			$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+
+			$search = ldap_search($activeDirectory['ad'],$activeDirectory['ldapDN'],$filter);
+			$info = ldap_get_entries($activeDirectory['ad'], $search);
+
+			$return= ldap_get_entries($activeDirectory['ad'],$search);
+			if($return['count'] > 0){
+			    $return[0]['domain'] = $activeDirectory['domain'];
+				$return = $return[0];
+			    return $return; //RETURN THE FIRST ONE
 			}
-			return $returnList;
+		    }else{
+				//consoleWrite("Cant BIND to Active Directory!");
+			return false;
+		    }
 		}
-		
     }
 
     public function listUsersofaGroup($group){
