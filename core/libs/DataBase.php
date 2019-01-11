@@ -18,7 +18,7 @@ class DataBase extends Core{
 		$this->db = $db;
 		if(!isset(core::$coreConfig['databases'][$this->db]['vendor'])){
 			$error = 'The database called <b>'.$this->db.'</b> doesn\'t exists in the config file.';
-			include '/core/errors/402.php';
+			include 'core/errors/402.php';
 			die();
 		}
 		$this->vendor = core::$coreConfig['databases'][$this->db]['vendor'];
