@@ -389,7 +389,7 @@ class ActiveDirectory extends Core{
 
 				$userdata["useraccountcontrol"][0]=512;
 				$userdata["lockoutTime"][0]=0;
-				$userdata["accountexpires"][0]='9223372036854775807';
+				//$userdata["accountexpires"][0]='9223372036854775807';
 
 				if(is_array($user['dn']) == 1){
 					$return = ldap_modify($ad, $user['dn'][0], $userdata);
