@@ -379,17 +379,17 @@ class ActiveDirectory extends Core{
 
 
 
-    public function unblockUser($user, $domain, $requireNewPassword = false){
+    public function unblockUser($user, $domain, $requireNewPassword = false, $accountexpires = 0){
 		$activeDirectory = $this->getDomain($domain);
 		$ad = $activeDirectory['ad'];
-		if($user['useraccountcontrol'][0] == 512 || $user['useraccountcontrol'][0] == 544 || $user['useraccountcontrol'][0] == 66048 || $user['useraccountcontrol'][0] == 66080){
+		if($user['useraccountcontrol'][0] == 512 || $user['useraccountcontrol'][0] == 544 || $user['useraccountcontrol'][0] == 66048 || $user['useraccountcontrol'][0] == 66080 || $user['useraccountcontrol'][0] == 65536){
 	 		try{
 				if($requireNewPassword)
 					$userdata["pwdlastset"][0] = 0;
 
-				$userdata["useraccountcontrol"][0]=512;
+				$userdata["useraccountcontrol"][0]=65536;
 				$userdata["lockoutTime"][0]=0;
-				$userdata["accountexpires"][0]='9223372036854775807';
+				$userdata["accountexpires"][0]= 0;//9223372036854775807';
 
 				if(is_array($user['dn']) == 1){
 					$return = ldap_modify($ad, $user['dn'][0], $userdata);
@@ -398,9 +398,9 @@ class ActiveDirectory extends Core{
 				}
 
 				$user2 = $this->getUser('samaccountname='.$user['samaccountname'][0], $domain);
+				$teste = $user2['useraccountcontrol'][0];
 
-
-				if(ldap_errno($ad) || $user2['useraccountcontrol'][0] <> 512){
+				if(ldap_errno($ad) || !($user2['useraccountcontrol'][0] == 512 || $user2['useraccountcontrol'][0] == 65536 || $user2['useraccountcontrol'][0] == 66048)){
 	 				return false;
 	 			}
 			}catch(Exception $e){
